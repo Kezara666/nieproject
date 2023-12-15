@@ -10,8 +10,7 @@ Column playButtonWithDownBar(double height, double width, double value,
     String programTitle, String author, bool status) {
   
 
-  AudioController audioController = Get.find();
-  IconData buttonIcon = audioController.isPlay ? Icons.pause : Icons.play_arrow ;
+
   return Column(
     children: [
       LinearProgressIndicator(
@@ -54,7 +53,6 @@ Column playButtonWithDownBar(double height, double width, double value,
             // Use the value from the controller to update the UI
             return BackGroundGradiantButtun(
             height: height,
-            icon: buttonIcon,
           );
           },
         ),

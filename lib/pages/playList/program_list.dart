@@ -8,6 +8,8 @@ import 'package:nieproject/services/functions/AudioController/audio_controller.d
 import 'package:nieproject/utils/colors.dart';
 import 'package:nieproject/widgets/down-play-button-withnavbar.dart';
 import 'package:nieproject/widgets/rounded-button.dart';
+import 'package:wave/config.dart';
+import 'package:wave/wave.dart';
 
 class ProgramListWindow extends StatefulWidget {
   final List<Map<String, dynamic>> programs;
@@ -23,9 +25,8 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
 
   double _progressValue = 0;
 
-
   String author = "Author";
-  
+
   Future<void> initAndPlayAudio(String url) async {
     try {
       await audioController.initAndPlayAudio(url);
@@ -118,23 +119,22 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
                   builder: (controller) {
                     // Use the value from the controller to update the UI
                     return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      controller.programName,
-                      style: TextStyle(
-                          fontFamily: 'YourFontFamily',
-                          fontSize:
-                              24, // Adjust the font size for the first text
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white // Make it bold
-                          ),
-                    ),
-                  ],
-                );
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          controller.programName,
+                          style: TextStyle(
+                              fontFamily: 'YourFontFamily',
+                              fontSize:
+                                  24, // Adjust the font size for the first text
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white // Make it bold
+                              ),
+                        ),
+                      ],
+                    );
                   },
                 ),
-                
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -163,7 +163,6 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
                             )),
                         child: TextButton.icon(
                             onPressed: () {
-                              
                               audioController.PlayPlayList(widget.programs);
                             },
                             icon: const Icon(
@@ -225,6 +224,8 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
                           }
                           audioController.programName =
                               widget.programs[index]['program_name'];
+                          audioController.episodeName =
+                              widget.programs[index]['episode'];
                         });
                       },
                       leading: Text(
@@ -242,6 +243,28 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if(widget.programs[index]['episode'] == audioController.episodeName && audioController.isPlay)
+                          WaveWidget(
+                            config: CustomConfig(
+                              gradients: [
+                                [const Color.fromARGB(255, 243, 245, 247), Color.fromARGB(255, 49, 53, 56)],
+                                [
+                                  const Color.fromARGB(255, 108, 110, 111).withOpacity(0.5),
+                                  const Color.fromARGB(255, 212, 215, 216).withOpacity(0.5)
+                                ],
+                                [
+                                  const Color.fromARGB(255, 245, 246, 247).withOpacity(0.8),
+                                  const Color.fromARGB(255, 188, 204, 216).withOpacity(0.8)
+                                ],
+                                [const Color.fromARGB(255, 222, 224, 227), const Color.fromARGB(255, 99, 104, 107)],
+                              ],
+                              durations: [35000, 19440, 10800, 6000],
+                              heightPercentages: [0.25, 0.26, 0.28, 0.31],
+                            ),
+                            size: Size(screenWidth/20,screenHeight/50),
+                            waveAmplitude: 10,
+                          ),
+                          if(widget.programs[index]['episode'] == audioController.episodeName && !audioController.isPlay)
                           Text(
                             widget.programs[index]['episode_time'] ?? '',
                             style: TextStyle(
@@ -289,7 +312,7 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
     super.initState();
 
     // Schedule a repeating timer that runs every minute
-    _timer =Timer.periodic(Duration(seconds: 1), (Timer timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
       // Your code to be executed every minute goes here
       // This function will be called every minute
       // Update the state or perform any necessary tasks
@@ -301,13 +324,13 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
     });
   }
 
-@override
-void dispose() {
-  // Cancel the periodic timer in the dispose method
-  _timer.cancel();
+  @override
+  void dispose() {
+    // Cancel the periodic timer in the dispose method
+    _timer.cancel();
 
-  super.dispose();
-}
+    super.dispose();
+  }
 
   int convertTimeToSeconds(String timeString) {
     List<String> timeComponents = timeString.split(':');
@@ -336,7 +359,7 @@ void dispose() {
   Future<void> pause() async {
     try {
       await audioController.pause();
-      audioController.isPlay =false;
+      audioController.isPlay = false;
     } catch (e) {
       print('Error playing audio: $e');
 

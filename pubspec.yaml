@@ -53,6 +53,8 @@ dependencies:
   device_info: ^2.0.3
   flutter_screenutil: ^5.9.0
   jwt_decoder: ^2.0.1
+  audioplayers: ^5.2.1
+  wave: ^0.2.2
 
 
 dev_dependencies:
