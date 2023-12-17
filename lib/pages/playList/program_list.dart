@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nieproject/enviroment/api.dart';
 import 'package:nieproject/services/functions/AudioController/audio_controller.dart';
 import 'package:nieproject/utils/colors.dart';
 import 'package:nieproject/widgets/down-play-button-withnavbar.dart';
+import 'package:nieproject/widgets/hamburger.dart';
 import 'package:nieproject/widgets/rounded-button.dart';
+import 'package:nieproject/widgets/show_popup_menu_program_download.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
@@ -60,247 +63,255 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
       child: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
-            gradient: linearGradient,
+            color: Color.fromRGBO(3, 20, 48, 1),
           ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          pause();
-                          Get.back();
-                        },
-                        icon: const Icon(Icons.arrow_back),
-                        color: Colors.white),
-                    const Expanded(
-                      child: Center(
+          child: GetBuilder<AudioController>(
+            builder: (controller) {
+              // Use the value from the controller to update the UI
+              return Column(
+                children: [
+                  SizedBox(
+                    height: screenHeight / 25,
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            pause();
+                            Get.back();
+                          },
+                          icon: const Icon(Icons.arrow_back),
+                          color: Colors.white),
+                      Expanded(
+                        child: Center(
+                          child: Container(
+                            child: CircleAvatar(
+                              radius:
+                                  20.0, // Increase the radius to make it larger
+                              backgroundImage: AssetImage('assets/logo.png'),
+                              backgroundColor:
+                                  Colors.white, // Replace with your logo image
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            showPopupMenu(context);
+                          },
+                          icon: const Icon(Icons.drag_indicator_rounded),
+                          color: Colors.white),
+                    ],
+                  ),
+                  SizedBox(
+                    height: screenHeight / 25,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.green
+                                .shade400, // Replace with your desired border color
+                            width: 10.0, // Adjust the border width as needed
+                          ),
+                        ),
                         child: CircleAvatar(
-                          radius: 20.0, // Increase the radius to make it larger
-                          backgroundImage: AssetImage('assets/logo.png'),
-                          backgroundColor:
-                              playAvatar, // Replace with your logo image
+                          radius: 100.0,
+                          backgroundColor: playAvatar, // Background color
                         ),
-                      ),
-                    ),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.drag_indicator_rounded),
-                        color: Colors.white),
-                  ],
-                ),
-                SizedBox(
-                  height: screenHeight / 25,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.green
-                              .shade400, // Replace with your desired border color
-                          width: 10.0, // Adjust the border width as needed
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: 100.0,
-                        backgroundColor: playAvatar, // Background color
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: screenHeight / 30,
-                ),
-                GetBuilder<AudioController>(
-                  builder: (controller) {
-                    // Use the value from the controller to update the UI
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          controller.programName,
-                          style: TextStyle(
-                              fontFamily: 'YourFontFamily',
-                              fontSize:
-                                  24, // Adjust the font size for the first text
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white // Make it bold
-                              ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      this.author,
-                      style: TextStyle(
-                        fontSize:
-                            16, // Adjust the font size for the second text
-                        color:
-                            Color.fromARGB(255, 74, 74, 74), // Reduce opacity
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: screenHeight / 60,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                        decoration: const BoxDecoration(
-                            color: Color.fromARGB(255, 85, 179, 96),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(50),
-                            )),
-                        child: TextButton.icon(
-                            onPressed: () {
-                              audioController.PlayPlayList(widget.programs);
-                            },
-                            icon: const Icon(
-                              Icons.play_arrow,
-                              color: Colors.black,
-                            ),
-                            label: const Text(
-                              'Listen',
-                              style: TextStyle(
-                                fontSize:
-                                    16, // Adjust the font size for the second text
-                                color: Color.fromARGB(
-                                    255, 7, 7, 7), // Reduce opacity
-                              ),
-                            ))),
-                    SizedBox(
-                      width: screenWidth / 30,
-                    ),
-                    Buttons.buttonRound()
-                  ],
-                ),
-                SizedBox(
-                  height: screenWidth / 30,
-                ),
-                Expanded(
-                    child: ListView.builder(
-                  itemCount: widget
-                      .programs.length, // Replace with your desired item count
-                  itemBuilder: (context, index) {
-                    // Simulated time
-                    String time =
-                        "${DateTime.now().hour}:${DateTime.now().minute}";
-
-                    return ListTile(
-                      onTap: () {
-                        Fluttertoast.showToast(
-                          msg: audioController.isPlay
-                              ? "Pause Audio"
-                              : "Start Playing",
-                          toastLength: Toast
-                              .LENGTH_LONG, // Duration for which the toast is displayed
-                          gravity: ToastGravity.BOTTOM, // Position of the toast
-                          timeInSecForIosWeb:
-                              1, // Duration for iOS (ignored on Android)
-                          backgroundColor: const Color.fromARGB(255, 222, 14,
-                              14), // Background color of the toast
-                          textColor: Colors.white, // Text color of the toast
-                          fontSize: 16.0, // Font size of the toast message
-                        );
-
-                        setState(() async {
-                          if (audioController.isPlay) {
-                            this.audioController.isPlay = false;
-                            await pause();
-                          } else if (!audioController.isPlay) {
-                            this.audioController.isPlay = true;
-                            initAndPlayAudio(
-                                "${appApi}${widget.programs[index]['program_file']}");
-                          }
-                          audioController.programName =
-                              widget.programs[index]['program_name'];
-                          audioController.episodeName =
-                              widget.programs[index]['episode'];
-                        });
-                      },
-                      leading: Text(
-                        '$index',
-                        style: TextStyle(
-                            color: Colors
-                                .white), // Number on the left corner with white text color
-                      ),
-                      title: Text(
-                        'Episode: ' + widget.programs[index]['episode'],
-                        style: TextStyle(
-                            color: Colors
-                                .white), // Main text with white text color
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: screenHeight / 30,
+                  ),
+                  GetBuilder<AudioController>(
+                    builder: (controller) {
+                      // Use the value from the controller to update the UI
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if(widget.programs[index]['episode'] == audioController.episodeName && audioController.isPlay)
-                          WaveWidget(
-                            config: CustomConfig(
-                              gradients: [
-                                [const Color.fromARGB(255, 243, 245, 247), Color.fromARGB(255, 49, 53, 56)],
-                                [
-                                  const Color.fromARGB(255, 108, 110, 111).withOpacity(0.5),
-                                  const Color.fromARGB(255, 212, 215, 216).withOpacity(0.5)
-                                ],
-                                [
-                                  const Color.fromARGB(255, 245, 246, 247).withOpacity(0.8),
-                                  const Color.fromARGB(255, 188, 204, 216).withOpacity(0.8)
-                                ],
-                                [const Color.fromARGB(255, 222, 224, 227), const Color.fromARGB(255, 99, 104, 107)],
-                              ],
-                              durations: [35000, 19440, 10800, 6000],
-                              heightPercentages: [0.25, 0.26, 0.28, 0.31],
-                            ),
-                            size: Size(screenWidth/20,screenHeight/50),
-                            waveAmplitude: 10,
-                          ),
-                          if(widget.programs[index]['episode'] == audioController.episodeName && !audioController.isPlay)
                           Text(
-                            widget.programs[index]['episode_time'] ?? '',
-                            style: TextStyle(
-                                color:
-                                    Colors.white), // Time with white text color
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              updateProgress(
-                                  widget.programs[index]['episode_time']);
-                            },
-                            icon: Icon(
-                              Icons.more_vert,
-                              color: Colors
-                                  .white, // Three-dots icon with white color
+                            controller.programName,
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
-                      ),
-                    );
-                  },
-                )),
-                GetBuilder<AudioController>(
-                  builder: (controller) {
-                    // Use the value from the controller to update the UI
-                    return playButtonWithDownBar(
-                        screenHeight,
-                        screenWidth,
-                        _progressValue,
-                        audioController.episodeName,
+                      );
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
                         this.author,
-                        audioController.isPlay);
-                  },
-                ),
-              ],
-            ),
+                        style: GoogleFonts.montserrat(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: screenHeight / 60,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                          decoration: const BoxDecoration(
+                              color: Color.fromARGB(255, 85, 179, 96),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50),
+                              )),
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: TextButton.icon(
+                                onPressed: () {
+                                  audioController.PlayPlayList(widget.programs);
+                                },
+                                icon: const Icon(
+                                  Icons.play_arrow,
+                                  color: Colors.black,
+                                ),
+                                label: Text(
+                                  'Listen',
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )),
+                          )),
+                      SizedBox(
+                        width: screenWidth / 30,
+                      ),
+                      Buttons.buttonRound()
+                    ],
+                  ),
+                  SizedBox(
+                    height: screenWidth / 30,
+                  ),
+                  Expanded(
+                      child: ListView.builder(
+                    itemCount: widget.programs
+                        .length, // Replace with your desired item count
+                    itemBuilder: (context, index) {
+                      // Simulated time
+                      String time =
+                          "${DateTime.now().hour}:${DateTime.now().minute}";
+
+                      return ListTile(
+                        onTap: () async {
+                          Fluttertoast.showToast(
+                            msg: audioController.isPlay
+                                ? "Pause Audio"
+                                : "Start Playing",
+                            toastLength: Toast
+                                .LENGTH_LONG, // Duration for which the toast is displayed
+                            gravity:
+                                ToastGravity.BOTTOM, // Position of the toast
+                            timeInSecForIosWeb:
+                                1, // Duration for iOS (ignored on Android)
+                            backgroundColor: const Color.fromARGB(255, 222, 14,
+                                14), // Background color of the toast
+                            textColor: Colors.white, // Text color of the toast
+                            fontSize: 16.0, // Font size of the toast message
+                          );
+                          onTapMethod(widget.programs[index]);
+                          
+                        },
+                        leading: Text(
+                          '$index',
+                          style: GoogleFonts.montserrat(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ), // Number on the left corner with white text color
+                        ),
+                        title: Text(
+                          'Episode: ' + widget.programs[index]['episode'],
+                          style: GoogleFonts.montserrat(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ), // Main text with white text color
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (widget.programs[index]['episode'] ==
+                                    audioController.episodeName &&
+                                audioController.isPlay)
+                              WaveWidget(
+                                config: CustomConfig(
+                                  gradients: [
+                                    [
+                                      const Color.fromARGB(255, 243, 245, 247),
+                                      Color.fromARGB(255, 49, 53, 56)
+                                    ],
+                                    [
+                                      const Color.fromARGB(255, 108, 110, 111)
+                                          .withOpacity(0.5),
+                                      const Color.fromARGB(255, 212, 215, 216)
+                                          .withOpacity(0.5)
+                                    ],
+                                    [
+                                      const Color.fromARGB(255, 245, 246, 247)
+                                          .withOpacity(0.8),
+                                      const Color.fromARGB(255, 188, 204, 216)
+                                          .withOpacity(0.8)
+                                    ],
+                                    [
+                                      const Color.fromARGB(255, 222, 224, 227),
+                                      const Color.fromARGB(255, 99, 104, 107)
+                                    ],
+                                  ],
+                                  durations: [35000, 19440, 10800, 6000],
+                                  heightPercentages: [0.25, 0.26, 0.28, 0.31],
+                                ),
+                                size: Size(screenWidth / 20, screenHeight / 50),
+                                waveAmplitude: 10,
+                              ),
+                            if (widget.programs[index]['episode'] !=
+                                    audioController.episodeName ||
+                                !audioController.isPlay)
+                              Text(
+                                widget.programs[index]['duration'] ?? '',
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ), // Time with white text color
+                              ),
+                            IconButton(
+                              onPressed: () {
+                                // updateProgress(
+                                //     widget.programs[index]['duration']);
+                                showPopupMenuDownload(context, screenHeight,widget.programs[index]);
+                              },
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: Colors
+                                    .white, // Three-dots icon with white color
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  )),
+                  playButtonWithDownBar(
+                      screenHeight,
+                      screenWidth,
+                      controller.progress,
+                      audioController.episodeName,
+                      this.author,
+                      audioController.isPlay)
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -349,11 +360,73 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
     }
   }
 
+  void showPopupMenuDownload(
+    BuildContext context,
+    double screenHeight,
+    dynamic listObject
+  ) async {
+    final RenderBox overlay =
+        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    final Offset offset = Offset(overlay.size.width - 50,
+        screenHeight / 1.5); // Adjust the values based on your UI
+    final result = await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(offset.dx, offset.dy, 0, 0),
+      items: [
+        PopupMenuItem<String>(
+          value: 'Open',
+          child: const Text('Open'),
+        ),
+        PopupMenuItem<String>(
+          value: 'Download',
+          child: const Text('Download'),
+        ),
+      ],
+    );
+
+    // Handle the selected option
+    if (result != null) {
+      handleMenuOption(result,listObject);
+    }
+  }
+
+  // Function to handle the selected menu option
+  void handleMenuOption(String option,dynamic listObject) async{
+    switch (option) {
+      case 'Open':
+        // Handle settings
+        onTapMethod(listObject);
+
+        break;
+      case 'Download':
+        // Handle change language
+        break;
+      case 'about':
+        // Handle about
+        break;
+      case 'logout':
+        // Handle logout
+        break;
+      // Add more cases for additional options if needed
+    }
+  }
+
+  Future<void> onTapMethod(dynamic program) async {
+    if (audioController.isPlay) {
+      this.audioController.isPlay = false;
+
+      await pause();
+    } else if (!audioController.isPlay) {
+      this.audioController.isPlay = true;
+      updateProgress(program['duration']);
+      initAndPlayAudio("${appApi}${program['program_file']}");
+    }
+    audioController.programName = program['program_name'];
+    audioController.episodeName = program['episode'];
+  }
+
   void updateProgress(String fullProgramTime) {
     audioController.GetAudioServiceTime(convertTimeToSeconds(fullProgramTime));
-    setState(() {
-      this._progressValue = audioController.progress;
-    });
   }
 
   Future<void> pause() async {

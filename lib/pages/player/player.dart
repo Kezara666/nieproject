@@ -30,8 +30,6 @@ class _OnAirScreenState extends State<OnAirScreen> {
   PlayRecodingWindow playRecodingWindow = Get.find();
   LoginPage loginWindow = Get.find();
 
-
-
   // Function to fetch data from the PHP script
   Future<void> fetchData() async {
     try {
@@ -56,9 +54,6 @@ class _OnAirScreenState extends State<OnAirScreen> {
       print('Error fetching data: $e');
     }
   }
-
-  
-
 
   // Async function to initialize and play audio
   Future<void> initAndPlayAudio(String url) async {
@@ -113,31 +108,29 @@ class _OnAirScreenState extends State<OnAirScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                
                 Row(
                   children: [
-                    SizedBox(
-                      width: screenWidth * 0.8333333333333333,
-                    ),
+                    
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.queue_music_outlined),
+                        color: Colors.transparent),
                     Expanded(
-                      child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.more_vert),
-                          color: Colors.white),
+                      child: Center(
+                        child: CircleAvatar(
+                          radius: 20.0, // Increase the radius to make it larger
+                          backgroundImage: AssetImage('assets/logo.png'),
+                          backgroundColor:
+                              Colors.white, // Replace with your logo image
+                        ),
+                      )
                     ),
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.more_vert),
+                        color: Colors.white),
                   ],
-                ),
-                Container(
-                  height: screenHeight / 20,
-                  width: screenWidth / 5,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromRGBO(82, 134, 188, 1.0),
-                        Color.fromRGBO(63, 193, 119, 1.0),
-                      ],
-                    ),
-                  ),
-                  child: Center(child: Text('NIE LOGO')),
                 ),
 
                 SizedBox(height: screenHeight * .0246305418719212),
@@ -184,7 +177,7 @@ class _OnAirScreenState extends State<OnAirScreen> {
                         'ON AIR',
                         style: GoogleFonts.zillaSlab(
                           color: const Color.fromARGB(255, 254, 253, 253),
-                          fontSize: screenHeight/35,
+                          fontSize: screenHeight / 35,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -224,6 +217,7 @@ class _OnAirScreenState extends State<OnAirScreen> {
                 IconButton(
                   onPressed: () {
                     // Increase volume when the first icon button is pressed
+                    audioController.isPlay = false;
                     audioController.audioPlayer.pause();
                   },
                   icon: new Image.asset("assets/stop.png"),
@@ -246,7 +240,8 @@ class _OnAirScreenState extends State<OnAirScreen> {
                     IconButton(
                       onPressed: () {
                         //Get.to(() => programListCalenderWindow);
-                        
+                        audioController.isPlay = false;
+                        audioController.audioPlayer.pause();
                         Get.to(() => programListCalenderWindow);
                       },
                       icon: new Image.asset("assets/pause.png"),
@@ -255,9 +250,7 @@ class _OnAirScreenState extends State<OnAirScreen> {
                     ),
                     const SizedBox(width: 40),
                     IconButton(
-                      onPressed: () {
-                        
-                      },
+                      onPressed: () {},
                       icon: new Image.asset("assets/hanlde.png"),
                       iconSize: 40,
                       color: Colors.blueAccent[100],

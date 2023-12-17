@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 import 'package:nieproject/enviroment/api.dart';
+import 'package:nieproject/models/user.dart';
 import 'package:nieproject/pages/chat/chat.dart';
 import 'package:nieproject/pages/player/player.dart';
 import 'package:nieproject/services/functions/userDetails/user_details.dart';
@@ -28,44 +29,39 @@ Future<void> login(String username, String password, BuildContext context) async
   try {
     final response = await http.post(
       Uri.parse(apiLogin),
-      body: jsonEncode({'username': username, 'password': password}),
+      body: jsonEncode({'email': username, 'password': password}),
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      final token = data['token'];
-      final role = data['role'];
-      // Decode the token
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      User user = User.fromJson(data['user']);
 
-      print("Token is" + token);
+      // Decode the token
+      
 
       //set the controller user
       userDetails.loginUser=username;
-      if(role == "student"){
+      userDetails.user =user;
+      if(user.role == "student"){
         Get.to(() => chatWindow);
       }
 
       // Store the token securely (e.g., using shared_preferences)
       // You may want to create a service for this
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(decodedToken.toString())),
+        SnackBar(content: Text(user.firstName.toString())),
       );
 
-      if (role == 'admin') {
+      if (user.role == 'admin') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('admin')),
         );
-      } else if (role == 'moderator') {
+      } else if (user.role == 'moderator') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('moderator')),
         );
-      } else if (role == 'student') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('student')),
-        );
-      }
+      } 
     } else if (response.statusCode == 400) {
       // Handle validation error
       ScaffoldMessenger.of(context).showSnackBar(

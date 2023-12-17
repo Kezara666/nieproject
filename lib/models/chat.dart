@@ -1,52 +1,45 @@
 class Chat {
-  String? sId;
-  String? userName;
-  String? userEmail;
-  String? userSchool;
-  String? ticketContent;
-  String? ticketStatus;
-  String? createdAt;
-  String? updatedAt;
-  int? iV;
-  String? ticketReply;
+  dynamic id;
+  dynamic studentId;
+  dynamic studentName;
+  dynamic message;
+  dynamic reply;
+  dynamic messageStatus;
+  dynamic createdAt;
+  dynamic updatedAt;
 
-  Chat(
-      {this.sId,
-      this.userName,
-      this.userEmail,
-      this.userSchool,
-      this.ticketContent,
-      this.ticketStatus,
-      this.createdAt,
-      this.updatedAt,
-      this.iV,
-      this.ticketReply});
+  Chat({
+    this.id,
+    this.studentId,
+    this.studentName,
+    this.message,
+    this.reply,
+    this.messageStatus,
+    this.createdAt,
+    this.updatedAt,
+  });
 
-  Chat.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    userName = json['user_name'];
-    userEmail = json['user_email'];
-    userSchool = json['user_school'];
-    ticketContent = json['ticket_content'];
-    ticketStatus = json['ticket_status'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    iV = json['__v'];
-    ticketReply = json['ticket_reply'];
+  Chat.fromJson(Map<dynamic, dynamic> json) {
+    id = json['id'];
+    studentId = json['student_id'];
+    studentName = json['student_name'];
+    message = json['message'];
+    reply = json['reply'];
+    messageStatus = json['message_status'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['user_name'] = this.userName;
-    data['user_email'] = this.userEmail;
-    data['user_school'] = this.userSchool;
-    data['ticket_content'] = this.ticketContent;
-    data['ticket_status'] = this.ticketStatus;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['__v'] = this.iV;
-    data['ticket_reply'] = this.ticketReply;
+  Map<dynamic, dynamic> toJson() {
+    final Map<dynamic, dynamic> data = new Map<dynamic, dynamic>();
+    data['id'] = this.id;
+    data['student_id'] = this.studentId;
+    data['student_name'] = this.studentName;
+    data['message'] = this.message;
+    data['reply'] = this.reply;
+    data['message_status'] = this.messageStatus;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
     return data;
   }
 }

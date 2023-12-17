@@ -3,11 +3,11 @@ const apiChat= 'http://alphau.nie.ac.lk/api/admin/tickets';
 
 const apiAdminTicket= 'http://alphau.nie.ac.lk/api/admin/tickets';
 
-const apiLogin = 'http://alphau.nie.ac.lk/api/login/';
+const apiLogin = 'http://51.20.35.255/api/login';
 
-const userChat ='http://alphau.nie.ac.lk/api/student/tickets/';
+const userChat ='http://51.20.35.255/api/chat/student/';
 
-const sendChat='http://alphau.nie.ac.lk/api/student/ticket/store';
+const sendChat='http://51.20.35.255/chat/student/store';
 const programList='http://alphau.nie.ac.lk/api/student/ticket/store';
 
 const appApi='http://51.20.35.255/';

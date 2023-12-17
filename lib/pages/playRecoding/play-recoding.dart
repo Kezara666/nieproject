@@ -38,8 +38,8 @@ class _PlayRecodingWindowState extends State<PlayRecodingWindow> {
       },
       child: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
-            gradient: linearGradient,
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(3, 20, 48, 1)
           ),
           child: SafeArea(
             child: Column(
@@ -58,26 +58,13 @@ class _PlayRecodingWindowState extends State<PlayRecodingWindow> {
                         color: Colors.white),
                     Expanded(
                       child: Center(
-                        child: Container(
-                          height: screenHeight / 20,
-                          width: screenWidth / 5,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color.fromRGBO(82, 134, 188, 1.0),
-                                Color.fromRGBO(63, 193, 119, 1.0),
-                              ],
-                            ),
-                          ),
-                          child: Center(child: Text('NIE LOGO')),
+                        child: CircleAvatar(
+                          radius: 20.0, // Increase the radius to make it larger
+                          backgroundImage: AssetImage('assets/logo.png'),
+                          backgroundColor:
+                              Colors.white, // Replace with your logo image
                         ),
-                        // child: CircleAvatar(
-                        //   radius: 20.0, // Increase the radius to make it larger
-                        //   backgroundImage: AssetImage('assets/logo.png'),
-                        //   backgroundColor:
-                        //       playAvatar, // Replace with your logo image
-                        // ),
-                      ),
+                      )
                     ),
                     IconButton(
                         onPressed: () {},
@@ -192,7 +179,7 @@ class _PlayRecodingWindowState extends State<PlayRecodingWindow> {
                       Expanded(
                         child: BackGroundGradiantButtun(
                           height: screenHeight * 2,
-                          icon: Icons.skip_previous_rounded,
+                          
                         ),
                       ),
                       SizedBox(
@@ -201,7 +188,7 @@ class _PlayRecodingWindowState extends State<PlayRecodingWindow> {
                       Expanded(
                         child: BackGroundGradiantButtun(
                           height: screenHeight * 2,
-                          icon: Icons.play_arrow,
+                          
                         ),
                       ),
                       SizedBox(
@@ -210,7 +197,7 @@ class _PlayRecodingWindowState extends State<PlayRecodingWindow> {
                       Expanded(
                         child: BackGroundGradiantButtun(
                           height: screenHeight * 2,
-                          icon: Icons.skip_next_rounded,
+                          
                         ),
                       ),
                       SizedBox(

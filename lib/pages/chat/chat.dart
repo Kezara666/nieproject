@@ -63,10 +63,10 @@ class _ChatWindowState extends State<ChatWindow> {
                       Expanded(
                         child: Text(
                           'NIE MCR',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
-                            fontSize: 15,
-                          ),
+                          style: GoogleFonts.montserrat(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
                         ),
                       ),
                       SizedBox(width: screenWidth / 2.5),
@@ -104,15 +104,12 @@ class _ChatWindowState extends State<ChatWindow> {
                           itemCount: chatController.items.length,
                           itemBuilder: (context, index) {
                             final chatItem = chatController.items[index];
-                            final hasReply = chatItem.ticketReply != null;
+                            final hasReply = chatItem.reply != null;
 
                             double containerWidth = hasReply
-                                ? chatItem.ticketReply
-                                        .toString()
-                                        .length
-                                        .toDouble() *
+                                ? chatItem.reply.toString().length.toDouble() *
                                     30
-                                : chatItem.ticketContent
+                                : chatItem.message
                                         .toString()
                                         .length
                                         .toDouble() *
@@ -121,65 +118,131 @@ class _ChatWindowState extends State<ChatWindow> {
                             return Column(
                               children: [
                                 hasReply
-                                    ? Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Container(
-                                          // Reply section when a reply is present
-
-                                          width: containerWidth,
-                                          margin: EdgeInsets.only(
-                                              bottom: screenHeight / 30),
-                                          padding: EdgeInsets.only(
-                                            bottom: screenHeight / 50,
-                                            top: screenHeight / 50,
-                                            left: screenWidth / 20,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(40),
-                                            color: Colors.blue[400]
-                                                ?.withOpacity(0.25),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Align(
-                                                alignment: Alignment.topLeft,
-                                                child: CircleAvatar(
-                                                    backgroundImage: AssetImage(
-                                                        'assets/teacher.png'),
-                                                    radius: screenHeight / 40,
-                                                    backgroundColor:
-                                                        Colors.transparent),
+                                    ? Column(
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              // Content without a reply
+                                              width: chatItem.message
+                                                      .toString()
+                                                      .length
+                                                      .toDouble() *
+                                                  50,
+                                              margin: EdgeInsets.only(
+                                                  bottom: screenHeight / 30),
+                                              padding: EdgeInsets.only(
+                                                bottom: screenHeight / 50,
+                                                top: screenHeight / 50,
+                                                left: screenWidth / 20,
                                               ),
-                                              SizedBox(width: screenWidth / 40),
-                                              Flexible(
-                                                child: Text(
-                                                  chatItem.ticketContent
-                                                      .toString(),
-                                                  maxLines: 4,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style:
-                                                      GoogleFonts.abhayaLibre(
-                                                    color: Colors.white,
-                                                    fontSize: screenWidth / 25,
-                                                    fontWeight: FontWeight.w200,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(40),
+                                                color: Colors.blue[400]
+                                                    ?.withOpacity(0.1),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      style: GoogleFonts.montserrat(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+                                                      chatItem.message
+                                                          .toString(),
+                                                      maxLines: 4,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
                                                   ),
-                                                ),
+                                                  SizedBox(
+                                                      width: screenWidth / 40),
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.topRight,
+                                                    child: CircleAvatar(
+                                                      radius: screenHeight / 40,
+                                                      backgroundColor:
+                                                          Colors.transparent,
+                                                      backgroundImage: AssetImage(
+                                                          'assets/student.png'),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                      width: screenWidth / 40),
+                                                ],
                                               ),
-                                              SizedBox(width: screenWidth / 40),
-                                              SizedBox(width: screenWidth / 40),
-                                            ],
+                                            ),
                                           ),
-                                        ),
+                                          
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Container(
+                                              // Reply section when a reply is present
+
+                                              width: containerWidth,
+                                              margin: EdgeInsets.only(
+                                                  bottom: screenHeight / 30),
+                                              padding: EdgeInsets.only(
+                                                bottom: screenHeight / 50,
+                                                top: screenHeight / 50,
+                                                left: screenWidth / 20,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(40),
+                                                color: Colors.blue[400]
+                                                    ?.withOpacity(0.25),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.topLeft,
+                                                    child: CircleAvatar(
+                                                        backgroundImage: AssetImage(
+                                                            'assets/teacher.png'),
+                                                        radius:
+                                                            screenHeight / 40,
+                                                        backgroundColor:
+                                                            Colors.transparent),
+                                                  ),
+                                                  SizedBox(
+                                                      width: screenWidth / 40),
+                                                  Flexible(
+                                                    child: Text(
+                                                      chatItem.reply
+                                                          .toString(),
+                                                      maxLines: 4,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: GoogleFonts.montserrat(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                      width: screenWidth / 40),
+                                                  SizedBox(
+                                                      width: screenWidth / 40),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       )
                                     : Align(
                                         alignment: Alignment.centerRight,
                                         child: Container(
                                           // Content without a reply
-                                          width: chatItem.ticketContent
+                                          width: chatItem.message
                                                   .toString()
                                                   .length
                                                   .toDouble() *
@@ -203,17 +266,11 @@ class _ChatWindowState extends State<ChatWindow> {
                                             children: [
                                               Flexible(
                                                 child: Text(
-                                                  style:
-                                                      GoogleFonts.abhayaLibre(
-                                                    color: Colors.white,
-                                                    fontSize: screenWidth / 25,
-                                                    fontWeight: FontWeight.w200,
-                                                  ),
-                                                  hasReply
-                                                      ? chatItem.ticketReply
-                                                          .toString()
-                                                      : chatItem.ticketContent
-                                                          .toString(),
+                                                  style: GoogleFonts.montserrat(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+                                                  chatItem.message.toString(),
                                                   maxLines: 4,
                                                   overflow:
                                                       TextOverflow.ellipsis,

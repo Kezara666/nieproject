@@ -21,6 +21,7 @@ class AudioController extends GetxController {
   String programName = "";
   String episodeName = "";
   double progress = 0;
+  int programDuration = 0 ;
 
   Future<void> initAndPlayAudio(String url) async {
     audioStreamUrl = url;
@@ -32,9 +33,9 @@ class AudioController extends GetxController {
         isPlay = true;
         update();
       } else {
+        isPlay = true;
         await audioPlayer.pause();
         await audioPlayer.play();
-        isPlay = true;
         update();
       }
     } catch (e) {
@@ -91,6 +92,17 @@ class AudioController extends GetxController {
   GetAudioServiceTime(int program) {
     audioPlayer.positionStream.listen((position) {
       this.progress = position.inSeconds.toDouble() / program;
+      // Fluttertoast.showToast(
+      //   msg: progress.toString(),
+      //   toastLength:
+      //       Toast.LENGTH_LONG, // Duration for which the toast is displayed
+      //   gravity: ToastGravity.BOTTOM, // Position of the toast
+      //   timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+      //   backgroundColor: const Color.fromARGB(
+      //       255, 222, 14, 14), // Background color of the toast
+      //   textColor: Colors.white, // Text color of the toast
+      //   fontSize: 16.0, // Font size of the toast message
+      // );
       updateProgress(progress);
 
       // ... (your existing code)
@@ -113,14 +125,12 @@ class AudioController extends GetxController {
     audioPlayer.play();
     //change UI
     this.audioStreamUrl = _playlist[_currentIndex];
-    Map<String, dynamic>? targetProgram = programsList.firstWhere(
-    (program) => program['program_file'] == this.audioStreamUrl.replaceAll(appApi,"")  
-  );
+    Map<String, dynamic>? targetProgram = programsList.firstWhere((program) =>
+        program['program_file'] == this.audioStreamUrl.replaceAll(appApi, ""));
     programName = targetProgram["program_name"];
-  episodeName = targetProgram["episode"];
-  update();
-  GetAudioServiceTime(targetProgram["episode_time"]);
-
+    episodeName = targetProgram["episode"];
+    update();
+    GetAudioServiceTime(targetProgram["duration"]);
   }
 
   void PlayPlayList(List<Map<String, dynamic>> list) async {
@@ -135,24 +145,23 @@ class AudioController extends GetxController {
     }).toList();
 
     this.audioStreamUrl = _playlist[_currentIndex];
-    Map<String, dynamic>? targetProgram = programsList.firstWhere(
-    (program) => program['program_file'] == this.audioStreamUrl.replaceAll(appApi,"")  
-  );
-  programName = targetProgram["program_name"];
-  episodeName = targetProgram["episode"];
-  update();
-  GetAudioServiceTime(convertTimeToSeconds(targetProgram["episode_time"]));
+    Map<String, dynamic>? targetProgram = programsList.firstWhere((program) =>
+        program['program_file'] == this.audioStreamUrl.replaceAll(appApi, ""));
+    programName = targetProgram["program_name"];
+    episodeName = targetProgram["episode"];
+    update();
+    GetAudioServiceTime(convertTimeToSeconds(targetProgram["duration"]));
 
     await audioPlayer.setUrl(_playlist[_currentIndex]);
-    isPlay =true;
+    isPlay = true;
+    await audioPlayer.play();
+
     audioPlayer.playerStateStream.listen((PlayerState state) {
       if (state.processingState == ProcessingState.completed) {
         _playNext();
       }
     });
   }
-
-
 
   int convertTimeToSeconds(String timeString) {
     List<String> timeComponents = timeString.split(':');

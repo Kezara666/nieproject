@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nieproject/enviroment/api.dart';
 import 'package:nieproject/pages/playList/program_list.dart';
 import 'package:nieproject/pages/playRecoding/play-recoding.dart';
@@ -88,26 +88,20 @@ class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
               color: Colors.white),
           Expanded(
             child: Center(
-              child: Container(
-                height: screenHeight / 20,
-                width: screenWidth / 5,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color.fromRGBO(82, 134, 188, 1.0),
-                      Color.fromRGBO(63, 193, 119, 1.0),
-                    ],
+                child: Center(
+              child: CircleAvatar(
+                  radius: 20.0, // Increase the radius to make it larger
+                  backgroundImage: AssetImage('assets/logo.png'),
+                  backgroundColor: Colors.white // Replace with your logo image
                   ),
+            )
+                // child: CircleAvatar(
+                //   radius: 20.0, // Increase the radius to make it larger
+                //   backgroundImage: AssetImage('assets/logo.png'),
+                //   backgroundColor:
+                //       playAvatar, // Replace with your logo image
+                // ),
                 ),
-                child: Center(child: Text('NIE LOGO')),
-              ),
-              // child: CircleAvatar(
-              //   radius: 20.0, // Increase the radius to make it larger
-              //   backgroundImage: AssetImage('assets/logo.png'),
-              //   backgroundColor:
-              //       playAvatar, // Replace with your logo image
-              // ),
-            ),
           ),
           IconButton(
               onPressed: () {
@@ -122,8 +116,10 @@ class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
           height: screenHeight / 60,
         ),
       if (this.isPressed == 0) CalenderContainer(),
-      if (this.isPressed == 0) Expanded(child: ContainerCalender()),
-      if (this.isPressed == 1) Expanded(child: ContainerCalender()),
+      if (this.isPressed == 0)
+        Expanded(child: ContainerCalender(this.isPressed)),
+      if (this.isPressed == 1)
+        Expanded(child: ContainerCalender(this.isPressed)),
       if (this.isPressed == 1) CalenderContainer(),
       if (this.isPressed == 1)
         SizedBox(
@@ -140,7 +136,7 @@ class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
       child: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
-            gradient: linearGradient,
+            color: Color.fromRGBO(3, 20, 48, 1)
           ),
           child: SafeArea(
             child: Column(
@@ -152,202 +148,283 @@ class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
     );
   }
 
-  ListView ContainerCalender() {
+  Widget ContainerCalender(double isPressed) {
     double screenWidth = MediaQuery.of(context).size.width;
-     double screenHeight = MediaQuery.of(context).size.height;
-    return ListView.builder(
-      itemCount:
-          this.programsList.length, // Replace with your desired item count
-      itemBuilder: (context, index) {
-        // Simulated time
-        final program = this.programsList[index];
-        String time = "${DateTime.now().hour}:${DateTime.now().minute}";
-        // Calculate the sum of 'duration' for each group
-        return ListTile(
-          leading: Text(
-            '${program[0]['program_name']}',
-            style: const TextStyle(
-                color: Colors
-                    .white), // Number on the left corner with white text color
-          ),
-          onTap: () {
-            audioController.programName = program[0]['program_name'];
-            Get.to(() => ProgramListWindow(programs: program));
-          },
-          title: Text(
-            '',
-            style: const TextStyle(
-                color: Colors.white), // Main text with white text color
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '${program[0]['episode_time']}',
-                style: const TextStyle(
-                    color: Colors.white), // Time with white text color
+    double screenHeight = MediaQuery.of(context).size.height;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Center(
+            child: Text(
+              'Choose by Program',
+              style: GoogleFonts.montserrat(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.more_vert,
-                  color: Colors.white, // Three-dots icon with white color
-                ),
-              ),
-              
-          ],
+            ),
           ),
-        );
-      },
+        ),
+        SizedBox(
+          height: screenHeight / 50,
+        ),
+        Divider(
+          color: Colors.white,
+          thickness: 2.0,
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: this
+                .programsList
+                .length, // Replace with your desired item count
+            itemBuilder: (context, index) {
+              // Simulated time
+              final program = this.programsList[index];
+              String time = "${DateTime.now().hour}:${DateTime.now().minute}";
+              // Calculate the sum of 'duration' for each group
+              return ListTile(
+                  leading: Text(
+                    '${program[0]['program_name']}',
+                    style: GoogleFonts.montserrat(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ), // Number on the left corner with white text color
+                  ),
+                  onTap: () {
+                    if (isPressed == 0) {
+                      audioController.programName = program[0]['program_name'];
+                      Get.to(() => ProgramListWindow(programs: program));
+                    }
+                  },
+                  title: Text(
+                    '',
+                    style: const TextStyle(
+                        color: Colors.white), // Main text with white text color
+                  ),
+                  trailing: GetBuilder<AudioController>(builder: (controller) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (program[0]['program_name'] ==
+                                controller.programName &&
+                            controller.isPlay)
+                          WaveWidget(
+                            config: CustomConfig(
+                              gradients: [
+                                [
+                                  const Color.fromARGB(255, 243, 245, 247),
+                                  Color.fromARGB(255, 49, 53, 56)
+                                ],
+                                [
+                                  const Color.fromARGB(255, 108, 110, 111)
+                                      .withOpacity(0.5),
+                                  const Color.fromARGB(255, 212, 215, 216)
+                                      .withOpacity(0.5)
+                                ],
+                                [
+                                  const Color.fromARGB(255, 245, 246, 247)
+                                      .withOpacity(0.8),
+                                  const Color.fromARGB(255, 188, 204, 216)
+                                      .withOpacity(0.8)
+                                ],
+                                [
+                                  const Color.fromARGB(255, 222, 224, 227),
+                                  const Color.fromARGB(255, 99, 104, 107)
+                                ],
+                              ],
+                              durations: [35000, 19440, 10800, 6000],
+                              heightPercentages: [0.25, 0.26, 0.28, 0.31],
+                            ),
+                            size: Size(screenWidth / 10, screenHeight / 30),
+                            waveAmplitude: 10,
+                          ),
+                        if (program[0]['program_name'] !=
+                                controller.programName ||
+                            !controller.isPlay)
+                          Text(
+                            '${program[0]['episode_time']}',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: Colors
+                                .white, // Three-dots icon with white color
+                          ),
+                        ),
+                      ],
+                    );
+                  }));
+            },
+          ),
+        ),
+      ],
     );
   }
 
-  Container CalenderContainer() {
-    return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-      decoration: BoxDecoration(
-          color: playAvatar, borderRadius: BorderRadius.circular(20)),
-      child: TableCalendar(
-          firstDay: DateTime.utc(2023, 1, 1),
-          lastDay: DateTime.utc(2023, 12, 31),
-          focusedDay: this._focusedDay,
-          calendarFormat: this._calendarFormat,
-          selectedDayPredicate: (day) {
-            return isSameDay(this._selectedDay, day);
-          },
-          onFormatChanged: (format) {
-            setState(() {
-              this._calendarFormat = format;
-            });
-          },
-          onPageChanged: (focusedDay) {
-            setState(() {
-              this._focusedDay = focusedDay;
-            });
-          },
-          onDaySelected: (selectedDay, focusedDay) {
-            fetchDataForSelectedDate(selectedDay!);
-            setState(() {
-              if (this.isPressed == 0) {
-                this.isPressed = 1;
-                Fluttertoast.showToast(
-                  msg: "If you need choose by program press same date again ",
-                  toastLength: Toast
-                      .LENGTH_LONG, // Duration for which the toast is displayed
-                  gravity: ToastGravity.BOTTOM, // Position of the toast
-                  timeInSecForIosWeb:
-                      1, // Duration for iOS (ignored on Android)
-                  backgroundColor: const Color.fromARGB(
-                      255, 222, 14, 14), // Background color of the toast
-                  textColor: Colors.white, // Text color of the toast
-                  fontSize: 16.0, // Font size of the toast message
-                );
-                print("pressed" + this.isPressed.toString());
-              }
-              if (_selectedDay == selectedDay) {
-                if (this.isPressed == 0) {
-                  this.isPressed = 1;
-                  Fluttertoast.showToast(
-                    msg: "If you need choose by program press same date again ",
-                    toastLength: Toast
-                        .LENGTH_LONG, // Duration for which the toast is displayed
-                    gravity: ToastGravity.BOTTOM, // Position of the toast
-                    timeInSecForIosWeb:
-                        1, // Duration for iOS (ignored on Android)
-                    backgroundColor: const Color.fromARGB(
-                        255, 222, 14, 14), // Background color of the toast
-                    textColor: Colors.white, // Text color of the toast
-                    fontSize: 10.0, // Font size of the toast message
-                  );
-                  print("pressed" + this.isPressed.toString());
-                } else if (this.isPressed == 1) {
-                  this.isPressed = 0;
-                  Fluttertoast.showToast(
-                    msg: "If you need choose by Date press a date ",
-                    toastLength: Toast
-                        .LENGTH_LONG, // Duration for which the toast is displayed
-                    gravity: ToastGravity.BOTTOM, // Position of the toast
-                    timeInSecForIosWeb:
-                        1, // Duration for iOS (ignored on Android)
-                    backgroundColor: const Color.fromARGB(
-                        255, 222, 14, 14), // Background color of the toast
-                    textColor: Colors.white, // Text color of the toast
-                    fontSize: 10.0, // Font size of the toast message
-                  );
-                }
-              }
-              this._selectedDay = selectedDay;
-            });
-          },
-          calendarStyle: const CalendarStyle(
-            disabledDecoration: BoxDecoration(),
-            defaultTextStyle:
-                TextStyle(color: Colors.white), // White text color
-            // Set the background color of the calendar
-            outsideDaysVisible: false,
-            // Hide non-visible days
-            weekendTextStyle:
-                TextStyle(color: Colors.white), // White text color for weekends
+  Widget CalenderContainer() {
+    double screenHeight = MediaQuery.of(context).size.height;
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Center(
+            child: Text(
+              'Choose by Date',
+              style: GoogleFonts.montserrat(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          headerStyle: const HeaderStyle(
-              leftChevronIcon: Icon(
-                Icons.arrow_back_ios,
-                color: Colors
-                    .white, // Change the color of the left (back) arrow button
+            ),
+          ),
+        ),
+        SizedBox(
+          height: screenHeight / 50,
+        ),
+        Divider(
+          color: Colors.white,
+          thickness: 2.0,
+        ),
+        Container(
+          margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
+          decoration: BoxDecoration(
+              color: playAvatar, borderRadius: BorderRadius.circular(20)),
+          child: TableCalendar(
+              firstDay: DateTime.utc(2023, 1, 1),
+              lastDay: DateTime.utc(2023, 12, 31),
+              focusedDay: this._focusedDay,
+              calendarFormat: this._calendarFormat,
+              selectedDayPredicate: (day) {
+                return isSameDay(this._selectedDay, day);
+              },
+              onFormatChanged: (format) {
+                setState(() {
+                  this._calendarFormat = format;
+                });
+              },
+              onPageChanged: (focusedDay) {
+                setState(() {
+                  this._focusedDay = focusedDay;
+                });
+              },
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  if (this.isPressed == 0) {
+                    this.isPressed = 1;
+                    fetchDataForSelectedDate(selectedDay!);
+                    Fluttertoast.showToast(
+                      msg:
+                          "If you need choose by program press same date again ",
+                      toastLength: Toast
+                          .LENGTH_LONG, // Duration for which the toast is displayed
+                      gravity: ToastGravity.BOTTOM, // Position of the toast
+                      timeInSecForIosWeb:
+                          1, // Duration for iOS (ignored on Android)
+                      backgroundColor: const Color.fromARGB(
+                          255, 222, 14, 14), // Background color of the toast
+                      textColor: Colors.white, // Text color of the toast
+                      fontSize: 16.0, // Font size of the toast message
+                    );
+                    print("pressed" + this.isPressed.toString());
+                  }
+                  if (_selectedDay == selectedDay) {
+                    if (this.isPressed == 1) {
+                      this.isPressed = 0;
+                      fetchData();
+                      Fluttertoast.showToast(
+                        msg: "If you need choose by Date press a date ",
+                        toastLength: Toast
+                            .LENGTH_LONG, // Duration for which the toast is displayed
+                        gravity: ToastGravity.BOTTOM, // Position of the toast
+                        timeInSecForIosWeb:
+                            1, // Duration for iOS (ignored on Android)
+                        backgroundColor: const Color.fromARGB(
+                            255, 222, 14, 14), // Background color of the toast
+                        textColor: Colors.white, // Text color of the toast
+                        fontSize: 10.0, // Font size of the toast message
+                      );
+                    }
+                  }
+                  this._selectedDay = selectedDay;
+                });
+              },
+              calendarStyle: const CalendarStyle(
+                disabledDecoration: BoxDecoration(),
+                defaultTextStyle:
+                    TextStyle(color: Colors.white), // White text color
+                // Set the background color of the calendar
+                outsideDaysVisible: false,
+                // Hide non-visible days
+                weekendTextStyle: TextStyle(
+                    color: Colors.white), // White text color for weekends
               ),
-              rightChevronIcon: Icon(
-                Icons.arrow_forward_ios,
-                color: Colors
-                    .white, // Change the color of the right (forward) arrow button
-              ),
-              formatButtonTextStyle: TextStyle(color: Colors.white),
-              formatButtonDecoration: BoxDecoration(color: Colors.transparent),
-              titleTextStyle: TextStyle(color: Colors.white)),
-          daysOfWeekStyle: const DaysOfWeekStyle(
-            weekdayStyle: TextStyle(color: Colors.white), // Weekday text color
-            weekendStyle: TextStyle(color: Colors.white24),
-            // Weekend text color
-          )),
+              headerStyle: const HeaderStyle(
+                  leftChevronIcon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors
+                        .white, // Change the color of the left (back) arrow button
+                  ),
+                  rightChevronIcon: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors
+                        .white, // Change the color of the right (forward) arrow button
+                  ),
+                  formatButtonTextStyle: TextStyle(color: Colors.white),
+                  formatButtonDecoration:
+                      BoxDecoration(color: Colors.transparent),
+                  titleTextStyle: TextStyle(color: Colors.white)),
+              daysOfWeekStyle: const DaysOfWeekStyle(
+                weekdayStyle:
+                    TextStyle(color: Colors.white), // Weekday text color
+                weekendStyle: TextStyle(color: Colors.white24),
+                // Weekend text color
+              )),
+        ),
+      ],
     );
   }
 
   Future<void> fetchDataForSelectedDate(DateTime selectedDate) async {
-  final formattedDate =
-      "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
-  final response =
-      await http.get(Uri.parse('${appApi}api/programs/$formattedDate'));
+    final formattedDate =
+        "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
+    final response =
+        await http.get(Uri.parse('${appApi}api/programs/$formattedDate'));
 
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> data = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
 
-    // Check if 'programs_filtered' key exists and is not null
-    if (data.containsKey('programs_filtered') &&
-        data['programs_filtered'] != null) {
-      final List<dynamic> programs = data['programs_filtered'];
+      // Check if 'programs_filtered' key exists and is not null
+      if (data.containsKey('programs_filtered') &&
+          data['programs_filtered'] != null) {
+        final List<dynamic> programs = data['programs_filtered'];
 
-      setState(() {
-        // Map 'programs' to your desired format
-        programsList = programs.map((program) {
-          return [
-            {
-              'program_name': program['program_name'],
-              'episode_time': program['episode_time'],
-              // Add other fields as needed
-            }
-          ];
-        }).toList();
+        setState(() {
+          // Map 'programs' to your desired format
+          programsList = programs.map((program) {
+            return [
+              {
+                'program_name': program['program_name'],
+                'episode_time': program['episode_time'],
+                // Add other fields as needed
+              }
+            ];
+          }).toList();
 
-        this.isPressed = 1; // Assuming you want to switch to the program list view
-      });
+          // Assuming you want to switch to the program list view
+        });
+      } else {
+        // Handle the case where 'programs_filtered' is null
+        print('Error: No programs found for the selected date.');
+      }
     } else {
-      // Handle the case where 'programs_filtered' is null
-      print('Error: No programs found for the selected date.');
+      throw Exception('Failed to load data for selected date');
     }
-  } else {
-    throw Exception('Failed to load data for selected date');
   }
-}
-
 
   Map<String, List<Map<String, dynamic>>> groupBy(
       List<dynamic> iterable, String Function(Map<String, dynamic>) key) {

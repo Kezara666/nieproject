@@ -148,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                       padding: EdgeInsets.all(screenHeight / 60),
                       child: Text(
                         'Login',
-                        style: GoogleFonts.aBeeZee(
+                        style: GoogleFonts.montserrat(
                           color: const Color.fromARGB(255, 254, 253, 253),
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
@@ -174,7 +174,10 @@ class _LoginPageState extends State<LoginPage> {
   void showTabletErrorSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Tablets are not supported by this app.'),
+        content: Text('Tablets are not supported by this app.',style: GoogleFonts.montserrat(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),),
       ),
     );
   }

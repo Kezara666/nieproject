@@ -45,9 +45,7 @@ import '../services/functions/AudioController/audio_controller.dart';
 class BackGroundGradiantButtun extends StatefulWidget {
   final double height;
 
-
-  const BackGroundGradiantButtun(
-      {super.key, required this.height});
+  const BackGroundGradiantButtun({super.key, required this.height});
 
   @override
   State<BackGroundGradiantButtun> createState() =>
@@ -63,20 +61,15 @@ class _BackGroundGradiantButtunState extends State<BackGroundGradiantButtun> {
         // Use the value from the controller to update the UI
         return IconButton(
           onPressed: () async {
-            setState(() async {
-              try {
+            try {
               if (audioController.isPlay) {
                 await audioController.pause();
-                
-              } else
-                {
-                  
-                  await audioController
-                      .initAndPlayAudio(audioController.audioStreamUrl);
-                      
-
-
-                };
+              } else {
+                audioController.isPlay =true;
+                await audioController
+                    .initAndPlayAudio(audioController.audioStreamUrl);
+              }
+              ;
             } catch (e) {
               Fluttertoast.showToast(
                 msg: e.toString(),
@@ -90,8 +83,6 @@ class _BackGroundGradiantButtunState extends State<BackGroundGradiantButtun> {
                 fontSize: 16.0, // Font size of the toast message
               );
             }
-            });
-            
           },
           icon: ShaderMask(
             blendMode: BlendMode.srcATop,

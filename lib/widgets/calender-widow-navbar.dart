@@ -1,73 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:nieproject/services/functions/AudioController/audio_controller.dart';
+import 'package:nieproject/widgets/background-gradiant-button.dart';
 
-
-Column calenderWidowNavbar(double heigt, double width) {
+Widget calenderWidowNavbar(double height, double width) {
   double iconSize = width / 15;
-  bool shuffle =false;
-  const playAvatar= Color.fromRGBO(117, 152, 200, 1);
-  return Column(
+  bool shuffle = false;
+  const playAvatar = Color.fromRGBO(117, 152, 200, 1);
+  return GetBuilder<AudioController>(
+    builder: (controller) {
+      // Use the value from the controller to update the UI
+      return Column(
     children: [
-      const LinearProgressIndicator(
-          backgroundColor: playAvatar,
-          value: 0.5,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.greenAccent)),
+      LinearProgressIndicator(
+        backgroundColor: playAvatar,
+        value: controller.progress,
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.greenAccent),
+      ),
       SizedBox(
-        height: heigt / 50,
+        height: height / 30,
       ),
       Row(
         children: [
-          // Adjust the fraction as needed
-
+          SizedBox(width: width / 10),
           Expanded(
-            child: IconButton(
-              icon: Icon(Icons.shuffle),
-              onPressed: () {
-                // Add your action here for the first button
-                
-              },
-              color: Color.fromRGBO(117, 152, 200, 1), // Set the icon color to playAvatar
-              iconSize: iconSize, // Set the icon size based on screen width
+            child: RichText(
+              text: TextSpan(
+                children: <TextSpan>[
+                  TextSpan(
+                    text: "Program Name :"+" "+ controller.programName,
+                    style: TextStyle(
+                      fontSize: width/30,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 218, 213, 213),
+                    ),
+                  ),
+                  TextSpan(
+                    text: ' \n\n' +"Episode Name : " + controller.episodeName,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: const Color.fromARGB(255, 162, 161, 161)
+                          .withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+          GetBuilder<AudioController>(
+          builder: (controller) {
+            // Use the value from the controller to update the UI
+            return BackGroundGradiantButtun(
+            height: height,
+          );
+          },
+        ),
 
-          Expanded(
-            child: IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                // Add your action here for the first button
-              },
-              color: playAvatar, // Set the icon color to playAvatar
-              iconSize: iconSize, // Set the icon size based on screen width
-            ),
-          ),
-
-          Expanded(
-            child: IconButton(
-              icon: Icon(Icons.download),
-              onPressed: () {
-                // Add your action here for the first button
-              },
-              color: playAvatar, // Set the icon color to playAvatar
-              iconSize: iconSize, // Set the icon size based on screen width
-            ),
-          ),
-          
-
-          Expanded(
-            child: IconButton(
-              icon: Icon(Icons.repeat),
-              onPressed: () {
-                // Add your action here for the first button
-              },
-              color: playAvatar, // Set the icon color to playAvatar
-              iconSize: iconSize, // Set the icon size based on screen width
-            ),
-          ),         
+          SizedBox(width: width / 10),
         ],
       ),
       SizedBox(
-        height: heigt / 35,
+        height: height / 25,
       ),
     ],
+  );
+    },
   );
 }
