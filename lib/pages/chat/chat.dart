@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:chat_bubbles/bubbles/bubble_normal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,13 +20,26 @@ class _ChatWindowState extends State<ChatWindow> {
   TextEditingController _textController = TextEditingController();
   final ChatController chatController = Get.find();
   OnAirScreen mainWindow = Get.find();
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
-    chatController
-        .fetchMessagesFromApi()
-        .then((value) => {}); // Fetch messages when the widget is initialized
+    setState(() {
+      chatController.fetchMessagesFromApi().then((value) => {});
+    });
+    _timer = Timer.periodic(Duration(microseconds: 50), (Timer timer) {
+      chatController.fetchMessagesFromApi();
+    });
+    // Fetch messages when the widget is initialized
+  }
+
+  @override
+  void dispose() {
+    // Cancel the periodic timer in the dispose method
+    _timer.cancel();
+
+    super.dispose();
   }
 
   @override
@@ -47,7 +63,7 @@ class _ChatWindowState extends State<ChatWindow> {
           body: SafeArea(
             child: Container(
               decoration: BoxDecoration(
-                gradient: linearGradient,
+                color: Colors.white
               ),
               child: Column(
                 children: [
@@ -58,27 +74,27 @@ class _ChatWindowState extends State<ChatWindow> {
                           Get.to(() => mainWindow);
                         },
                         icon: Icon(Icons.arrow_back),
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                       Expanded(
                         child: Text(
                           'NIE MCR',
                           style: GoogleFonts.montserrat(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       SizedBox(width: screenWidth / 2.5),
                       IconButton(
                         onPressed: () {},
                         icon: Icon(Icons.call),
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                       IconButton(
                         onPressed: () {},
                         icon: Icon(Icons.video_call),
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ],
                   ),
@@ -86,7 +102,7 @@ class _ChatWindowState extends State<ChatWindow> {
                   Container(
                     width: double.infinity,
                     height: 1, // Adjust the line height as needed
-                    color: Colors.white
+                    color: Colors.black
                         .withOpacity(0.5), // Adjust the line color as needed
                   ),
                   SizedBox(height: screenWidth / 30),
@@ -117,181 +133,79 @@ class _ChatWindowState extends State<ChatWindow> {
 
                             return Column(
                               children: [
-                                hasReply
-                                    ? Column(
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: BubbleNormal(
+                                        text: chatItem.message.toString(),
+                                        isSender: true,
+                                        color: Color.fromARGB(255, 240, 241, 242),
+                                        tail: true,
+                                        textStyle: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    CircleAvatar(
+                                      radius:
+                                          MediaQuery.of(context).size.width /
+                                              15,
+                                      backgroundColor: Colors.transparent,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Color.fromARGB(255, 40, 110, 215),
+                                              const Color.fromARGB(
+                                                  255, 59, 190, 255)
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                chatItem.reply.toString() != 'null'
+                                    ? Row(
                                         children: [
-                                          Align(
-                                            alignment: Alignment.centerRight,
+                                          CircleAvatar(
+                                            radius: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                15,
+                                            backgroundColor: Colors.transparent,
                                             child: Container(
-                                              // Content without a reply
-                                              width: chatItem.message
-                                                      .toString()
-                                                      .length
-                                                      .toDouble() *
-                                                  50,
-                                              margin: EdgeInsets.only(
-                                                  bottom: screenHeight / 30),
-                                              padding: EdgeInsets.only(
-                                                bottom: screenHeight / 50,
-                                                top: screenHeight / 50,
-                                                left: screenWidth / 20,
-                                              ),
                                               decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(40),
-                                                color: Colors.blue[400]
-                                                    ?.withOpacity(0.1),
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  Flexible(
-                                                    child: Text(
-                                                      style: GoogleFonts.montserrat(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-                                                      chatItem.message
-                                                          .toString(),
-                                                      maxLines: 4,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                      width: screenWidth / 40),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.topRight,
-                                                    child: CircleAvatar(
-                                                      radius: screenHeight / 40,
-                                                      backgroundColor:
-                                                          Colors.transparent,
-                                                      backgroundImage: AssetImage(
-                                                          'assets/student.png'),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                      width: screenWidth / 40),
-                                                ],
+                                                shape: BoxShape.circle,
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Colors.orange,
+                                                    Color.fromARGB(
+                                                        255, 204, 197, 11)
+                                                  ],
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                          
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Container(
-                                              // Reply section when a reply is present
-
-                                              width: containerWidth,
-                                              margin: EdgeInsets.only(
-                                                  bottom: screenHeight / 30),
-                                              padding: EdgeInsets.only(
-                                                bottom: screenHeight / 50,
-                                                top: screenHeight / 50,
-                                                left: screenWidth / 20,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(40),
-                                                color: Colors.blue[400]
-                                                    ?.withOpacity(0.25),
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.topLeft,
-                                                    child: CircleAvatar(
-                                                        backgroundImage: AssetImage(
-                                                            'assets/teacher.png'),
-                                                        radius:
-                                                            screenHeight / 40,
-                                                        backgroundColor:
-                                                            Colors.transparent),
-                                                  ),
-                                                  SizedBox(
-                                                      width: screenWidth / 40),
-                                                  Flexible(
-                                                    child: Text(
-                                                      chatItem.reply
-                                                          .toString(),
-                                                      maxLines: 4,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: GoogleFonts.montserrat(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                      width: screenWidth / 40),
-                                                  SizedBox(
-                                                      width: screenWidth / 40),
-                                                ],
-                                              ),
+                                          BubbleNormal(
+                                            text: chatItem.reply.toString(),
+                                            isSender: false,
+                                            color: Color.fromARGB(255, 240, 241, 242),
+                                            tail: true,
+                                            textStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.black,
                                             ),
                                           ),
                                         ],
                                       )
-                                    : Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Container(
-                                          // Content without a reply
-                                          width: chatItem.message
-                                                  .toString()
-                                                  .length
-                                                  .toDouble() *
-                                              50,
-                                          margin: EdgeInsets.only(
-                                              bottom: screenHeight / 30),
-                                          padding: EdgeInsets.only(
-                                            bottom: screenHeight / 50,
-                                            top: screenHeight / 50,
-                                            left: screenWidth / 20,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(40),
-                                            color: Colors.blue[400]
-                                                ?.withOpacity(0.1),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  style: GoogleFonts.montserrat(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-                                                  chatItem.message.toString(),
-                                                  maxLines: 4,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              SizedBox(width: screenWidth / 40),
-                                              Align(
-                                                alignment: Alignment.topRight,
-                                                child: CircleAvatar(
-                                                  radius: screenHeight / 40,
-                                                  backgroundColor:
-                                                      Colors.transparent,
-                                                  backgroundImage: AssetImage(
-                                                      'assets/student.png'),
-                                                ),
-                                              ),
-                                              SizedBox(width: screenWidth / 40),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                    : SizedBox()
                               ],
                             );
                           },
@@ -309,12 +223,12 @@ class _ChatWindowState extends State<ChatWindow> {
                           decoration: InputDecoration(
                             hintText: 'Type a message...',
                             hintStyle: TextStyle(
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.black.withOpacity(0.5),
                             ),
                             fillColor: Colors.transparent,
                           ),
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -331,7 +245,7 @@ class _ChatWindowState extends State<ChatWindow> {
                               .clear(); // Clear the input field // Clear the input field
                         },
                         icon: Icon(Icons.send),
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ],
                   ),

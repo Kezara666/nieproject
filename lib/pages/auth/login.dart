@@ -1,16 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:nieproject/auth/authenticate_user.dart';
-import 'package:nieproject/pages/chat/chat.dart';
-import 'package:nieproject/pages/player/player.dart';
-import 'package:nieproject/utils/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:device_info/device_info.dart';
+import 'package:nieproject/auth/authenticate_user.dart';
+import 'package:nieproject/utils/colors.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key});
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -19,10 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  
-  
-
-  
+  bool showPassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +23,8 @@ class _LoginPageState extends State<LoginPage> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(
-                'assets/a.gif'), // Replace with your image asset path
-            fit: BoxFit.cover, // Adjust the fit property as needed
+            image: AssetImage('assets/a.gif'),
+            fit: BoxFit.cover,
           ),
           gradient: linearGradient,
         ),
@@ -43,10 +33,12 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Container(
               decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(50),
-                      topRight: Radius.circular(50))),
+                color: Colors.transparent,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(50),
+                  topRight: Radius.circular(50),
+                ),
+              ),
               height: screenHeight / 2,
               child: Column(
                 children: [
@@ -81,11 +73,8 @@ class _LoginPageState extends State<LoginPage> {
                         focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
                         ),
-                        // Set the text color to white
-                        hintStyle: const TextStyle(
-                            color: Colors.white), // Hint text color
-                        focusColor: Colors
-                            .white, // Color of the cursor and text when focused
+                        hintStyle: const TextStyle(color: Colors.white),
+                        focusColor: Colors.white,
                       ),
                     ),
                   ),
@@ -94,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: TextField(
                       style: const TextStyle(color: Colors.white),
                       controller: passwordController,
-                      obscureText: true,
+                      obscureText: !showPassword,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle: GoogleFonts.aBeeZee(
@@ -112,6 +101,19 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         hintStyle: const TextStyle(color: Colors.white),
                         focusColor: Colors.white,
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              showPassword = !showPassword;
+                            });
+                          },
+                          icon: Icon(
+                            showPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -128,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                           showTabletErrorSnackBar(context);
                         } else {
                           login(username, password, context);
-                          
                         }
                       } catch (e) {}
 
@@ -136,11 +137,11 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(
-                          const Color.fromARGB(255, 58, 116, 216)),
+                        const Color.fromARGB(255, 58, 116, 216),
+                      ),
                       shape: MaterialStateProperty.all(
                         RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(40.0), // Set border radius
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
                     ),
@@ -166,18 +167,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<bool> isTablet(double screenWidth, double screenHeight) async {
-    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    
-    return screenWidth>= 600;
-
+    // Check if the screen width is greater than or equal to 600 (adjust this threshold as needed)
+    return screenWidth >= 600;
   }
+
   void showTabletErrorSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Tablets are not supported by this app.',style: GoogleFonts.montserrat(
+        content: Text(
+          'Tablets are not supported by this app.',
+          style: GoogleFonts.montserrat(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-          ),),
+          ),
+        ),
       ),
     );
   }

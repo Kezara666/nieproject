@@ -13,6 +13,8 @@ import 'package:nieproject/widgets/rounded-button.dart';
 import 'package:nieproject/widgets/show_popup_menu_program_download.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ProgramListWindow extends StatefulWidget {
   final List<Map<String, dynamic>> programs;
@@ -223,7 +225,6 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
                             fontSize: 16.0, // Font size of the toast message
                           );
                           onTapMethod(widget.programs[index]);
-                          
                         },
                         leading: Text(
                           '$index',
@@ -289,7 +290,8 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
                               onPressed: () {
                                 // updateProgress(
                                 //     widget.programs[index]['duration']);
-                                showPopupMenuDownload(context, screenHeight,widget.programs[index]);
+                                showPopupMenuDownload(context, screenHeight,
+                                    widget.programs[index]);
                               },
                               icon: Icon(
                                 Icons.more_vert,
@@ -361,10 +363,7 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
   }
 
   void showPopupMenuDownload(
-    BuildContext context,
-    double screenHeight,
-    dynamic listObject
-  ) async {
+      BuildContext context, double screenHeight, dynamic listObject) async {
     final RenderBox overlay =
         Overlay.of(context)!.context.findRenderObject() as RenderBox;
     final Offset offset = Offset(overlay.size.width - 50,
@@ -386,12 +385,12 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
 
     // Handle the selected option
     if (result != null) {
-      handleMenuOption(result,listObject);
+      handleMenuOption(result, listObject);
     }
   }
 
   // Function to handle the selected menu option
-  void handleMenuOption(String option,dynamic listObject) async{
+  void handleMenuOption(String option, dynamic listObject) async {
     switch (option) {
       case 'Open':
         // Handle settings
@@ -400,6 +399,8 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
         break;
       case 'Download':
         // Handle change language
+        await _requestPermission();
+        await fileDownload(listObject);
         break;
       case 'about':
         // Handle about
@@ -448,5 +449,94 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
         fontSize: 16.0, // Font size of the toast message
       );
     }
+  }
+
+  Future<void> _requestPermission() async {
+    PermissionStatus status = await Permission.manageExternalStorage.request();
+
+    if (status == PermissionStatus.granted) {
+      Fluttertoast.showToast(
+        msg: "permission granted ",
+        toastLength:
+            Toast.LENGTH_LONG, // Duration for which the toast is displayed
+        gravity: ToastGravity.BOTTOM, // Position of the toast
+        timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+        backgroundColor: const Color.fromARGB(
+            255, 222, 14, 14), // Background color of the toast
+        textColor: Colors.white, // Text color of the toast
+        fontSize: 16.0, // Font size of the toast message
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: "No permission to Storage please allow that",
+        toastLength:
+            Toast.LENGTH_LONG, // Duration for which the toast is displayed
+        gravity: ToastGravity.BOTTOM, // Position of the toast
+        timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+        backgroundColor: const Color.fromARGB(
+            255, 222, 14, 14), // Background color of the toast
+        textColor: Colors.white, // Text color of the toast
+        fontSize: 16.0, // Font size of the toast message
+      );
+      // Permission denied.
+      // You might want to show a message to the user explaining why the permission is needed.
+    }
+  }
+
+  Future<void> fileDownload(dynamic path) async {
+    PermissionStatus status = await Permission.manageExternalStorage.status;
+
+    if (status != PermissionStatus.granted) {
+      await _requestPermission();
+      return;
+    }
+    FileDownloader.downloadFile(
+        url: "${appApi}${path['program_file']}",
+        name: path['program_name'] + path['episode'], //(optional)
+        onProgress: (fileName, progress) {
+          Fluttertoast.showToast(
+            msg: fileName.toString() +
+                " " +
+                "downloading " +
+                progress.toString() +
+                "%",
+            toastLength:
+                Toast.LENGTH_LONG, // Duration for which the toast is displayed
+            gravity: ToastGravity.BOTTOM, // Position of the toast
+            timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+            backgroundColor: const Color.fromARGB(
+                255, 222, 14, 14), // Background color of the toast
+            textColor: Colors.white, // Text color of the toast
+            fontSize: 16.0, // Font size of the toast message
+          );
+        },
+        onDownloadCompleted: (String path) {
+          print('FILE DOWNLOADED TO PATH: ');
+          Fluttertoast.showToast(
+            msg: "FILE DOWNLOADED TO PATH: " + path.toString(),
+            toastLength:
+                Toast.LENGTH_LONG, // Duration for which the toast is displayed
+            gravity: ToastGravity.BOTTOM, // Position of the toast
+            timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+            backgroundColor: const Color.fromARGB(
+                255, 222, 14, 14), // Background color of the toast
+            textColor: Colors.white, // Text color of the toast
+            fontSize: 16.0, // Font size of the toast message
+          );
+        },
+        onDownloadError: (String error) {
+          print('DOWNLOAD ERROR: $error');
+          Fluttertoast.showToast(
+            msg: "DOWNLOAD ERROR: $error",
+            toastLength:
+                Toast.LENGTH_LONG, // Duration for which the toast is displayed
+            gravity: ToastGravity.BOTTOM, // Position of the toast
+            timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+            backgroundColor: const Color.fromARGB(
+                255, 222, 14, 14), // Background color of the toast
+            textColor: Colors.white, // Text color of the toast
+            fontSize: 16.0, // Font size of the toast message
+          );
+        });
   }
 }

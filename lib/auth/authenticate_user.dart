@@ -43,7 +43,7 @@ Future<void> login(String username, String password, BuildContext context) async
       //set the controller user
       userDetails.loginUser=username;
       userDetails.user =user;
-      if(user.role == "student"){
+      if(user.role == "user"){
         Get.to(() => chatWindow);
       }
 
