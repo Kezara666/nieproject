@@ -135,9 +135,7 @@ class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
       },
       child: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
-            color: Color.fromRGBO(3, 20, 48, 1)
-          ),
+          decoration: const BoxDecoration(color: Color.fromRGBO(3, 20, 48, 1)),
           child: SafeArea(
             child: Column(
               children: children2,
@@ -277,9 +275,9 @@ class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
             child: Text(
               'Choose by Date',
               style: GoogleFonts.montserrat(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
@@ -295,95 +293,67 @@ class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
           decoration: BoxDecoration(
               color: playAvatar, borderRadius: BorderRadius.circular(20)),
           child: TableCalendar(
-              firstDay: DateTime.utc(2023, 1, 1),
-              lastDay: DateTime.utc(2023, 12, 31),
-              focusedDay: this._focusedDay,
-              calendarFormat: this._calendarFormat,
-              selectedDayPredicate: (day) {
-                return isSameDay(this._selectedDay, day);
-              },
-              onFormatChanged: (format) {
-                setState(() {
-                  this._calendarFormat = format;
-                });
-              },
-              onPageChanged: (focusedDay) {
-                setState(() {
-                  this._focusedDay = focusedDay;
-                });
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  if (this.isPressed == 0) {
-                    this.isPressed = 1;
-                    fetchDataForSelectedDate(selectedDay!);
+            firstDay: DateTime.utc(2010, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
+            focusedDay: DateTime.now(),
+            calendarStyle: const CalendarStyle(
+              disabledDecoration: BoxDecoration(),
+              defaultTextStyle: TextStyle(color: Colors.white),
+              outsideDaysVisible: false,
+              weekendTextStyle: TextStyle(color: Colors.white),
+            ),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                if (isPressed == 0) {
+                  isPressed = 1;
+                  fetchDataForSelectedDate(selectedDay);
+                  Fluttertoast.showToast(
+                    msg: "If you need choose by program press same date again ",
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: const Color.fromARGB(255, 222, 14, 14),
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+                  print("pressed" + isPressed.toString());
+                }
+                if (_selectedDay == selectedDay) {
+                  if (isPressed == 1) {
+                    isPressed = 0;
+                    fetchData();
                     Fluttertoast.showToast(
-                      msg:
-                          "If you need choose by program press same date again ",
-                      toastLength: Toast
-                          .LENGTH_LONG, // Duration for which the toast is displayed
-                      gravity: ToastGravity.BOTTOM, // Position of the toast
-                      timeInSecForIosWeb:
-                          1, // Duration for iOS (ignored on Android)
-                      backgroundColor: const Color.fromARGB(
-                          255, 222, 14, 14), // Background color of the toast
-                      textColor: Colors.white, // Text color of the toast
-                      fontSize: 16.0, // Font size of the toast message
+                      msg: "If you need choose by Date press a date ",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: const Color.fromARGB(255, 222, 14, 14),
+                      textColor: Colors.white,
+                      fontSize: 10.0,
                     );
-                    print("pressed" + this.isPressed.toString());
                   }
-                  if (_selectedDay == selectedDay) {
-                    if (this.isPressed == 1) {
-                      this.isPressed = 0;
-                      fetchData();
-                      Fluttertoast.showToast(
-                        msg: "If you need choose by Date press a date ",
-                        toastLength: Toast
-                            .LENGTH_LONG, // Duration for which the toast is displayed
-                        gravity: ToastGravity.BOTTOM, // Position of the toast
-                        timeInSecForIosWeb:
-                            1, // Duration for iOS (ignored on Android)
-                        backgroundColor: const Color.fromARGB(
-                            255, 222, 14, 14), // Background color of the toast
-                        textColor: Colors.white, // Text color of the toast
-                        fontSize: 10.0, // Font size of the toast message
-                      );
-                    }
-                  }
-                  this._selectedDay = selectedDay;
-                });
-              },
-              calendarStyle: const CalendarStyle(
-                disabledDecoration: BoxDecoration(),
-                defaultTextStyle:
-                    TextStyle(color: Colors.white), // White text color
-                // Set the background color of the calendar
-                outsideDaysVisible: false,
-                // Hide non-visible days
-                weekendTextStyle: TextStyle(
-                    color: Colors.white), // White text color for weekends
+                }
+                _selectedDay = selectedDay;
+              });
+            },
+            headerStyle: const HeaderStyle(
+              leftChevronIcon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
               ),
-              headerStyle: const HeaderStyle(
-                  leftChevronIcon: Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors
-                        .white, // Change the color of the left (back) arrow button
-                  ),
-                  rightChevronIcon: Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors
-                        .white, // Change the color of the right (forward) arrow button
-                  ),
-                  formatButtonTextStyle: TextStyle(color: Colors.white),
-                  formatButtonDecoration:
-                      BoxDecoration(color: Colors.transparent),
-                  titleTextStyle: TextStyle(color: Colors.white)),
-              daysOfWeekStyle: const DaysOfWeekStyle(
-                weekdayStyle:
-                    TextStyle(color: Colors.white), // Weekday text color
-                weekendStyle: TextStyle(color: Colors.white24),
-                // Weekend text color
-              )),
+              rightChevronIcon: Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white,
+              ),
+              formatButtonTextStyle: TextStyle(color: Colors.white),
+              formatButtonDecoration: BoxDecoration(color: Colors.transparent),
+              titleTextStyle: TextStyle(color: Colors.white),
+            ),
+            daysOfWeekStyle: const DaysOfWeekStyle(
+              weekdayStyle: TextStyle(color: Colors.white),
+              weekendStyle: TextStyle(color: Colors.white24),
+            ),
+          ),
         ),
       ],
     );

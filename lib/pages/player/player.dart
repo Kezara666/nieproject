@@ -23,7 +23,7 @@ class OnAirScreen extends StatefulWidget {
 class _OnAirScreenState extends State<OnAirScreen> {
   double volume = 0.5; // Initial volume value
   final AudioPlayer audioPlayer = AudioPlayer();
-  String audioStreamUrl = '';
+  String audioStreamUrl = 'http://16.171.141.172:8000/stream';
   ProgramListCalenderWindow programListCalenderWindow =
       Get.find<ProgramListCalenderWindow>();
   AudioController audioController = Get.find();
@@ -33,25 +33,9 @@ class _OnAirScreenState extends State<OnAirScreen> {
   // Function to fetch data from the PHP script
   Future<void> fetchData() async {
     try {
-      final response = await http
-          .get(Uri.parse('https://securityapp.realit.lk/nie/index.php'));
-
-      if (response.statusCode == 200) {
-        // Parse the response JSON or content
-        final data = json.decode(response.body);
-
-        // Assuming the response is a JSON object with a "stream_url" field
-        final streamUrl = data['stream_url'];
-
-        setState(() {
-          audioStreamUrl = streamUrl;
-          initAndPlayAudio(audioStreamUrl);
-        });
-      } else {
-        print('Failed to fetch data: ${response.statusCode}');
-      }
+      initAndPlayAudio(audioStreamUrl);
     } catch (e) {
-      print('Error fetching data: $e');
+      print('error' + 'Error fetching data: $e');
     }
   }
 
@@ -108,24 +92,21 @@ class _OnAirScreenState extends State<OnAirScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                
                 Row(
                   children: [
-                    
                     IconButton(
                         onPressed: () {},
                         icon: const Icon(Icons.queue_music_outlined),
                         color: Colors.transparent),
                     Expanded(
-                      child: Center(
-                        child: CircleAvatar(
-                          radius: 20.0, // Increase the radius to make it larger
-                          backgroundImage: AssetImage('assets/logo.png'),
-                          backgroundColor:
-                              Colors.white, // Replace with your logo image
-                        ),
-                      )
-                    ),
+                        child: Center(
+                      child: CircleAvatar(
+                        radius: 20.0, // Increase the radius to make it larger
+                        backgroundImage: AssetImage('assets/logo.png'),
+                        backgroundColor:
+                            Colors.white, // Replace with your logo image
+                      ),
+                    )),
                     IconButton(
                         onPressed: () {},
                         icon: const Icon(Icons.more_vert),

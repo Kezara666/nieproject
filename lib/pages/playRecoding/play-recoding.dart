@@ -6,6 +6,8 @@ import 'package:nieproject/utils/colors.dart';
 import 'package:nieproject/widgets/background-gradiant-button.dart';
 import 'package:nieproject/widgets/calender-widow-navbar.dart';
 import 'package:nieproject/widgets/custom-curve-play-rocoding-window.dart';
+import 'package:nieproject/widgets/next-button.dart';
+import 'package:nieproject/widgets/prev-button.dart';
 
 class PlayRecodingWindow extends StatefulWidget {
   const PlayRecodingWindow({
@@ -18,7 +20,7 @@ class PlayRecodingWindow extends StatefulWidget {
 
 class _PlayRecodingWindowState extends State<PlayRecodingWindow> {
   OnAirScreen mainWindow = Get.find();
-  double volume = 0.5;
+  double volume = 0.8;
   void updateVolume(double newValue) {
     setState(() {
       volume = newValue;
@@ -177,7 +179,7 @@ class _PlayRecodingWindowState extends State<PlayRecodingWindow> {
                         width: screenWidth / 10,
                       ),
                       Expanded(
-                        child: BackGroundGradiantButtun(
+                        child: BackGroundGradiantPrevButtun(
                           height: screenHeight * 2,
                           
                         ),
@@ -195,7 +197,7 @@ class _PlayRecodingWindowState extends State<PlayRecodingWindow> {
                         width: screenWidth / 10,
                       ),
                       Expanded(
-                        child: BackGroundGradiantButtun(
+                        child: BackGroundGradiantNextButtun(
                           height: screenHeight * 2,
                           
                         ),

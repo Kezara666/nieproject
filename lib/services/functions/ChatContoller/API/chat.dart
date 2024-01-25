@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:nieproject/enviroment/api.dart';
 
 class ApiService {
-  final String baseUrl = '"http://alphau.nie.ac.lk/api/admin/tickets"'; // Replace with your API endpoint
+  final String baseUrl = apiChat;
 
   Future<List<String>> fetchChatMessages() async {
     final response = await http.get(Uri.parse('$baseUrl/chat')); // Adjust the endpoint
