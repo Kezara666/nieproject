@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -12,11 +13,41 @@ import 'package:nieproject/pages/chat/chat.dart';
 import 'package:nieproject/pages/player/player.dart';
 import 'package:nieproject/services/functions/userDetails/user_details.dart';
 
-Future<void> login(String username, String password, BuildContext context) async {
+
+//send firebase admin devices token
+  Future<void> addTokens() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+    String serverUrl = adminDeviceToken;
+
+    if (token != null) {
+      try {
+        var response = await http.post(
+          Uri.parse(serverUrl),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'tokens': [token]
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          Map<String, dynamic> data = jsonDecode(response.body);
+          print(data['message']);
+        } else {
+          print('Failed to add tokens. Status code: ${response.statusCode}');
+        }
+      } catch (error) {
+        print('Error adding tokens: $error');
+      }
+    } else {
+      print('Failed to get FCM token.');
+    }
+  }
+
+
+Future<void> login(
+    String username, String password, BuildContext context) async {
   UserDetails userDetails = Get.find();
   ChatWindow chatWindow = Get.find();
-
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
   // Validate the form fields
   if (username.isEmpty || password.isEmpty) {
     // Show validation error
@@ -38,14 +69,14 @@ Future<void> login(String username, String password, BuildContext context) async
       User user = User.fromJson(data['user']);
 
       // Decode the token
-      
 
       //set the controller user
-      userDetails.loginUser=username;
-      userDetails.user =user;
-      if(user.role == "user"){
+      userDetails.loginUser = username;
+      userDetails.user = user;
+      if (user.role == "user") {
         Get.to(() => chatWindow);
       }
+
 
       // Store the token securely (e.g., using shared_preferences)
       // You may want to create a service for this
@@ -54,14 +85,20 @@ Future<void> login(String username, String password, BuildContext context) async
       );
 
       if (user.role == 'admin') {
+        //add token device
+        await addTokens();
+
+        ///////////////////////////////
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('admin')),
         );
+
+        Get.to(() => chatWindow);
       } else if (user.role == 'moderator') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('moderator')),
         );
-      } 
+      }
     } else if (response.statusCode == 400) {
       // Handle validation error
       ScaffoldMessenger.of(context).showSnackBar(
@@ -83,4 +120,6 @@ Future<void> login(String username, String password, BuildContext context) async
       SnackBar(content: Text('An error occurred: $error')),
     );
   }
+
+  
 }

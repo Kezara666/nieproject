@@ -1,3 +1,6 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -7,10 +10,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nieproject/enviroment/api.dart';
 import 'package:nieproject/models/program.dart';
 import 'package:nieproject/pages/auth/login.dart';
+import 'package:nieproject/pages/chat/call/call_page.dart';
 import 'package:nieproject/pages/chat/chat.dart';
 import 'package:nieproject/pages/playListWithCalender/play-list-with-calender.dart';
 import 'package:nieproject/pages/playRecoding/play-recoding.dart';
 import 'package:nieproject/services/functions/AudioController/audio_controller.dart';
+import 'package:nieproject/services/functions/userDetails/user_details.dart';
 import 'package:nieproject/utils/colors.dart';
 import 'package:nieproject/widgets/sound-controller-paint.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,11 +28,14 @@ class OnAirScreen extends StatefulWidget {
 class _OnAirScreenState extends State<OnAirScreen> {
   double volume = 0.5; // Initial volume value
   final AudioPlayer audioPlayer = AudioPlayer();
-  String audioStreamUrl = 'http://16.171.141.172:8000/stream';
+  String audioStreamUrl = streamApi;
   ProgramListCalenderWindow programListCalenderWindow =
       Get.find<ProgramListCalenderWindow>();
   AudioController audioController = Get.find();
   PlayRecodingWindow playRecodingWindow = Get.find();
+
+  UserDetails userDetails = Get.find();
+  CallPage callWindow = Get.find();
   LoginPage loginWindow = Get.find();
 
   // Function to fetch data from the PHP script
@@ -70,6 +78,48 @@ class _OnAirScreenState extends State<OnAirScreen> {
   @override
   void initState() {
     super.initState();
+
+    //firbase fcm
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      String? title = message.notification!.title;
+      String? body = message.notification!.body;
+      AwesomeNotifications().createNotification(
+          content: NotificationContent(
+              id: 123,
+              channelKey: 'call_channel',
+              color: Colors.amber,
+              title: title,
+              body: body,
+              category: NotificationCategory.Call,
+              wakeUpScreen: true,
+              fullScreenIntent: true,
+              autoDismissible: false,
+              backgroundColor: Colors.orange),
+          actionButtons: [
+            NotificationActionButton(
+                key: "ACCEPT",
+                label: "Accept Call",
+                color: Colors.green,
+                autoDismissible: true),
+            NotificationActionButton(
+                key: "REJECT",
+                label: "Reject Call",
+                color: Color.fromARGB(255, 210, 8, 8),
+                autoDismissible: true)
+          ]);
+    });
+
+    ///////listen
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+        onNotificationCreatedMethod:
+            NotificationController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod:
+            NotificationController.onNotificationDisplayedMethod,
+        onDismissActionReceivedMethod:
+            NotificationController.onDismissActionReceivedMethod);
+
     // Call the async function to initialize and play audio when the widget is initialized
     fetchData();
   }
@@ -149,8 +199,9 @@ class _OnAirScreenState extends State<OnAirScreen> {
                   ),
                   padding: const EdgeInsets.all(10),
                   child: TextButton(
-                    onPressed: () {
-                      Get.to(() => playRecodingWindow);
+                    onPressed: () async {
+                      // Get.to(() => playRecodingWindow);
+                      print(await FirebaseMessaging.instance.getToken());
                     },
                     child: Align(
                       alignment: Alignment.topCenter,
@@ -244,5 +295,60 @@ class _OnAirScreenState extends State<OnAirScreen> {
         ),
       ),
     );
+  }
+}
+
+class NotificationController {
+  /// Use this method to detect when a new notification or a schedule is created
+  @pragma("vm:entry-point")
+  static Future<void> onNotificationCreatedMethod(
+      ReceivedNotification receivedNotification) async {
+    // Your code goes here
+  }
+
+  /// Use this method to detect every time that a new notification is displayed
+  @pragma("vm:entry-point")
+  static Future<void> onNotificationDisplayedMethod(
+      ReceivedNotification receivedNotification) async {
+    UserDetails userDetails = Get.find();
+    CallPage callWindow = Get.find();
+    LoginPage loginWindow = Get.find();
+    // Your code goes here
+    if (userDetails.loginUser!="") {
+      Get.to(() => callWindow);
+    } else {
+      Get.to(() => loginWindow);
+    }
+  }
+
+  /// Use this method to detect if the user dismissed a notification
+  @pragma("vm:entry-point")
+  static Future<void> onDismissActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    UserDetails userDetails = Get.find();
+    CallPage callWindow = Get.find();
+    LoginPage loginWindow = Get.find();
+    // Your code goes here
+    if (userDetails.loginUser!="") {
+      Get.to(() => callWindow);
+    } else {
+      Get.to(() => loginWindow);
+    }
+  }
+
+  /// Use this method to detect when the user taps on a notification or action button
+  @pragma("vm:entry-point")
+  static Future<void> onActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    UserDetails userDetails = Get.find();
+    CallPage callWindow = Get.find();
+    LoginPage loginWindow = Get.find();
+    // Your code goes here
+    if (userDetails.loginUser!="") {
+      Get.to(() => callWindow);
+    } else {
+      Get.to(() => loginWindow);
+    }
+    // Navigate into pages, avoiding to open the notification details page over another details page already opened
   }
 }

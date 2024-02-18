@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "378173638930",
+    "project_id": "nieproject-6f36b",
+    "storage_bucket": "nieproject-6f36b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378173638930:android:da34320cd1029c06384bcb",
+        "android_client_info": {
+          "package_name": "com.example.nieproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBx1Nxuebkdi52JvduVBGfTGdv0Ln1XCSE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

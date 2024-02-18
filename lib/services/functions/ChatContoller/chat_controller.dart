@@ -10,14 +10,36 @@ import 'package:nieproject/services/functions/userDetails/user_details.dart';
 
 class ChatController extends GetxController {
   RxList<Chat> items = <Chat>[].obs;
+  RxBool isLoading = false.obs;
   final ApiService apiService = ApiService();
   UserDetails userDetails = Get.find();
   void addItem(Chat message) {
     items.add(message);
   }
 
+  //call notifications
+  Future<void> callServer() async {
+  final String url = 'http://nieappworld.com:3000/sendMulticastNotification';
+
+  try {
+    final http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      // Request was successful
+      print('Response: ${json.decode(response.body)}');
+    } else {
+      // Request failed with an error code
+      print('Error: ${response.statusCode}');
+    }
+  } catch (e) {
+    // An error occurred during the request
+    print('Error: $e');
+  }
+}
+
   Future<void> fetchMessagesFromApi() async {
     try {
+      isLoading.value = true;
       final response = await http.get(
         Uri.parse(userChat + userDetails.user.id.toString()),
       );
@@ -61,23 +83,21 @@ class ChatController extends GetxController {
   }
 
   Future<void> submitTicket(email, content, BuildContext context) async {
-    String apiUrl = '$sendChat';
     print("Failed to submit ticket: ${email} ${content}");
 
     try {
       final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        Uri.parse(sendChat),
         body: jsonEncode({
-          'student_id': userDetails.user.id,
+          'id': userDetails.user.id,
           'student_name': userDetails.user.firstName,
-          'message': content,
-          'message_status': 'sent' // Assuming studentName is the ID
+          'send_msg': "${content}"
         }),
+        headers: {'Content-Type': 'application/json'},
       );
-      if (response.statusCode == 201) {
+      print("here" + response.statusCode.toString());
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Ticket submitted successfully.")),
         );
@@ -88,6 +108,25 @@ class ChatController extends GetxController {
         );
       }
     } catch (e) {
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      ///
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       print("Failed to submit ticket: ${e}");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to submit ticket: ${e}")),

@@ -14,6 +14,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool showPassword = false;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -118,23 +119,33 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () async {
-                      String username = usernameController.text;
-                      String password = passwordController.text;
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              isLoading = true;
+                            });
 
-                      try {
-                        bool isTabletDevice =
-                            await isTablet(screenWidth, screenHeight);
+                            String username = usernameController.text;
+                            String password = passwordController.text;
 
-                        if (isTabletDevice) {
-                          showTabletErrorSnackBar(context);
-                        } else {
-                          login(username, password, context);
-                        }
-                      } catch (e) {}
+                            try {
+                              bool isTabletDevice =
+                                  await isTablet(screenWidth, screenHeight);
 
-                      // Handle form submission here
-                    },
+                              if (isTabletDevice) {
+                                showTabletErrorSnackBar(context);
+                              } else {
+                                await login(username, password, context);
+                              }
+                            } catch (e) {
+                              // Handle any errors during login
+                            } finally {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            }
+                          },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(
                         const Color.fromARGB(255, 58, 116, 216),
@@ -147,14 +158,19 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(screenHeight / 60),
-                      child: Text(
-                        'Login',
-                        style: GoogleFonts.montserrat(
-                          color: const Color.fromARGB(255, 254, 253, 253),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      child: isLoading
+                          ? CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            )
+                          : Text(
+                              'Login',
+                              style: GoogleFonts.montserrat(
+                                color: const Color.fromARGB(255, 254, 253, 253),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                     ),
                   ),
                 ],

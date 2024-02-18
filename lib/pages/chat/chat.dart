@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nieproject/models/chat.dart';
+import 'package:nieproject/pages/chat/call/call_page.dart';
 import 'package:nieproject/pages/player/player.dart';
 import 'package:nieproject/services/functions/ChatContoller/chat_controller.dart';
 import 'package:nieproject/utils/colors.dart';
@@ -20,6 +21,7 @@ class _ChatWindowState extends State<ChatWindow> {
   TextEditingController _textController = TextEditingController();
   final ChatController chatController = Get.find();
   OnAirScreen mainWindow = Get.find();
+  CallPage callWindow = Get.find();
   late Timer _timer;
 
   @override
@@ -62,9 +64,7 @@ class _ChatWindowState extends State<ChatWindow> {
         child: Scaffold(
           body: SafeArea(
             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white
-              ),
+              decoration: BoxDecoration(color: Colors.white),
               child: Column(
                 children: [
                   Row(
@@ -92,7 +92,12 @@ class _ChatWindowState extends State<ChatWindow> {
                         color: Colors.black,
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          chatController.callServer().then((_) {
+                            print('Server function completed.');
+                          });
+                          Get.to(() => callWindow);
+                        },
                         icon: Icon(Icons.video_call),
                         color: Colors.black,
                       ),
@@ -139,7 +144,8 @@ class _ChatWindowState extends State<ChatWindow> {
                                       child: BubbleNormal(
                                         text: chatItem.message.toString(),
                                         isSender: true,
-                                        color: Color.fromARGB(255, 240, 241, 242),
+                                        color:
+                                            Color.fromARGB(255, 240, 241, 242),
                                         tail: true,
                                         textStyle: TextStyle(
                                           fontSize: 20,
@@ -196,7 +202,8 @@ class _ChatWindowState extends State<ChatWindow> {
                                           BubbleNormal(
                                             text: chatItem.reply.toString(),
                                             isSender: false,
-                                            color: Color.fromARGB(255, 240, 241, 242),
+                                            color: Color.fromARGB(
+                                                255, 240, 241, 242),
                                             tail: true,
                                             textStyle: TextStyle(
                                               fontSize: 20,

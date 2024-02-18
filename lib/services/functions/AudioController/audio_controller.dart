@@ -21,6 +21,10 @@ class AudioController extends GetxController {
   int programDuration = 0 ;
 
   Future<void> initAndPlayAudio(String url) async {
+
+    //https convert into http
+    url = url.replaceAll("https", "http");
+    
     audioStreamUrl = url;
     update();
     try {
