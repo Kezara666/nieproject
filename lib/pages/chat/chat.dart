@@ -21,7 +21,7 @@ class _ChatWindowState extends State<ChatWindow> {
   TextEditingController _textController = TextEditingController();
   final ChatController chatController = Get.find();
   OnAirScreen mainWindow = Get.find();
-  CallPage callWindow = Get.find();
+  // CallPage callWindow = Get.find();
   late Timer _timer;
 
   @override
@@ -96,7 +96,7 @@ class _ChatWindowState extends State<ChatWindow> {
                           chatController.callServer().then((_) {
                             print('Server function completed.');
                           });
-                          Get.to(() => callWindow);
+                         
                         },
                         icon: Icon(Icons.video_call),
                         color: Colors.black,

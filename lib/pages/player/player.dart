@@ -35,7 +35,7 @@ class _OnAirScreenState extends State<OnAirScreen> {
   PlayRecodingWindow playRecodingWindow = Get.find();
 
   UserDetails userDetails = Get.find();
-  CallPage callWindow = Get.find();
+
   LoginPage loginWindow = Get.find();
 
   // Function to fetch data from the PHP script
@@ -311,11 +311,10 @@ class NotificationController {
   static Future<void> onNotificationDisplayedMethod(
       ReceivedNotification receivedNotification) async {
     UserDetails userDetails = Get.find();
-    CallPage callWindow = Get.find();
     LoginPage loginWindow = Get.find();
     // Your code goes here
     if (userDetails.loginUser!="") {
-      Get.to(() => callWindow);
+
     } else {
       Get.to(() => loginWindow);
     }
@@ -326,11 +325,11 @@ class NotificationController {
   static Future<void> onDismissActionReceivedMethod(
       ReceivedAction receivedAction) async {
     UserDetails userDetails = Get.find();
-    CallPage callWindow = Get.find();
+
     LoginPage loginWindow = Get.find();
     // Your code goes here
     if (userDetails.loginUser!="") {
-      Get.to(() => callWindow);
+
     } else {
       Get.to(() => loginWindow);
     }
@@ -341,11 +340,11 @@ class NotificationController {
   static Future<void> onActionReceivedMethod(
       ReceivedAction receivedAction) async {
     UserDetails userDetails = Get.find();
-    CallPage callWindow = Get.find();
+    
     LoginPage loginWindow = Get.find();
     // Your code goes here
     if (userDetails.loginUser!="") {
-      Get.to(() => callWindow);
+
     } else {
       Get.to(() => loginWindow);
     }

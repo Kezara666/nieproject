@@ -58,7 +58,7 @@ dependencies:
   chat_bubbles: ^1.5.0
   flutter_file_downloader: ^1.2.0
   permission_handler: ^11.0.1
-  zego_uikit_prebuilt_call: ^4.1.9
+  # zego_uikit_prebuilt_call: ^4.1.9
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.10
   awesome_notifications: ^0.8.2
