@@ -3,14 +3,20 @@ const apiChat= 'http://alphau.nie.ac.lk/api/admin/tickets';
 
 const apiAdminTicket= 'http://alphau.nie.ac.lk/api/admin/tickets';
 
-const apiLogin = 'http://51.20.35.255/api/login';
+const apiLogin = 'http://nieappworld.com/api/login';
 
-const userChat ='http://51.20.35.255/api/chat/student/';
+const userChat ='http://nieappworld.com/api/chat/student/';
 
-const sendChat='http://51.20.35.255/chat/student/store';
-const programList='http://alphau.nie.ac.lk/api/student/ticket/store';
+const sendChat='http://nieappworld.com/api/chat/student/store';
+const programList='http://nieappworld.com/api/student/ticket/store';
 
-const appApi='http://51.20.35.255/';
+const appApi='http://nieappworld.com/';
+
+const streamApi ='http://172.212.81.114:8000/';
+
+const adminDeviceToken = 'http://nieappworld.com:3000/addTokens';
+const callAdmin = 'http://nieappworld.com:3000/sendMulticastNotification';
+
 //http://localhost:8000/api/programs
 // http://localhost:8000/api/student/tickets/${username}
 
@@ -31,7 +37,7 @@ const appApi='http://51.20.35.255/';
 //     "user_email": "student.test@z.com"
 // }
 
-//https://github.com/realitTeam/nie-radio.git
+//http://github.com/realitTeam/nie-radio.git
 
 // const mongoose = require('mongoose');
 
@@ -92,14 +98,14 @@ http://localhost:8000/api/student/ticket/store
     "user_email": "student.test@z.com"
 }
 Kusal Wijekoon11.16
-https://github.com/realitTeam/nie-radio.git
+http://github.com/realitTeam/nie-radio.git
 Kusal Wijekoon11.20
 http://localhost:8000/api/admin/recordings
 
 {
         "_id": "651fa6927d2226e8594ca923",
         "session_name": "Length",
-        "session_link": "https://www.youtube.com/watch?v=3m3EEWYgMq8&list=PLlyv4_Vxwl-y9CiRKDN1EwxvyRzyefv0D",
+        "session_link": "http://www.youtube.com/watch?v=3m3EEWYgMq8&list=PLlyv4_Vxwl-y9CiRKDN1EwxvyRzyefv0D",
         "session_grade": "3",
         "session_subject": "Mathematics",
         "createdAt": "2023-10-06T06:17:54.361Z",
@@ -108,7 +114,7 @@ http://localhost:8000/api/admin/recordings
     },
 {
         "session_name": "Length",
-        "session_link": "https://www.youtube.com/watch?v=3m3EEWYgMq8&list=PLlyv4_Vxwl-y9CiRKDN1EwxvyRzyefv0D",
+        "session_link": "http://www.youtube.com/watch?v=3m3EEWYgMq8&list=PLlyv4_Vxwl-y9CiRKDN1EwxvyRzyefv0D",
         "session_grade": "3",
         "session_subject": "Mathematics",
     },
@@ -145,7 +151,7 @@ streaming_time
 session_description
 "Nisi optio commodo "
 session_link
-"https://mongoosejs.com/docs/timestamps.com"
+"http://mongoosejs.com/docs/timestamps.com"
 session_grade
 "13"
 session_subject
