@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
@@ -23,7 +24,7 @@ class OnAirScreen extends StatefulWidget {
 class _OnAirScreenState extends State<OnAirScreen> {
   double volume = 0.5; // Initial volume value
   final AudioPlayer audioPlayer = AudioPlayer();
-  String audioStreamUrl = 'http://16.171.141.172:8000/stream';
+  String audioStreamUrl = 'https://172.212.81.114/live';
   ProgramListCalenderWindow programListCalenderWindow =
       Get.find<ProgramListCalenderWindow>();
   AudioController audioController = Get.find();
@@ -71,7 +72,9 @@ class _OnAirScreenState extends State<OnAirScreen> {
   void initState() {
     super.initState();
     // Call the async function to initialize and play audio when the widget is initialized
-    fetchData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchData(); // Move your async call to here
+    });
   }
 
   @override
@@ -140,7 +143,7 @@ class _OnAirScreenState extends State<OnAirScreen> {
                 SizedBox(height: screenHeight * .0246305418719212),
 
                 Container(
-                  height: screenHeight / 13,
+                  height: screenHeight / 12,
                   width: screenWidth / 3,
                   decoration: BoxDecoration(
                     gradient: onFire,
@@ -195,46 +198,59 @@ class _OnAirScreenState extends State<OnAirScreen> {
                   ),
                 ),
                 SizedBox(height: screenHeight / 200),
-                IconButton(
-                  onPressed: () {
-                    // Increase volume when the first icon button is pressed
-                    audioController.isPlay = false;
-                    audioController.audioPlayer.pause();
-                  },
-                  icon: new Image.asset("assets/stop.png"),
-                  iconSize: 40,
-                ),
+                // IconButton(
+                //   onPressed: () {
+                //     // Increase volume when the first icon button is pressed
+                //     audioController.isPlay = false;
+                //     audioController.audioPlayer.pause();
+                //   },
+                //   icon: new Image.asset("assets/stop.png"),
+                //   iconSize: 40,
+                // ),
                 SizedBox(height: screenHeight / 100),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                      onPressed: () {
-                        // Increase volume when the first icon button is pressed
-                        Get.to(() => loginWindow);
-                      },
-                      icon: new Image.asset("assets/chat.png"),
-                      iconSize: 40,
-                      color: Colors.blueAccent[100],
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {
+                          // Your action for this button
+                          Get.to(() => loginWindow);
+                        },
+                        icon: SizedBox(
+                          width: 50, // Adjust size as needed
+                          height: 50,
+                          child: Image.asset("assets/chat.png"),
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 40),
-                    IconButton(
-                      onPressed: () {
-                        //Get.to(() => programListCalenderWindow);
-                        audioController.isPlay = false;
-                        audioController.audioPlayer.pause();
-                        Get.to(() => programListCalenderWindow);
-                      },
-                      icon: new Image.asset("assets/pause.png"),
-                      iconSize: 40,
-                      color: Colors.blueAccent[100],
+                    // Add any desired spacing between buttons if necessary
+                    // SizedBox(width: yourDesiredSpacing),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {
+                          // Your action for this button
+                          audioController.isPlay = false;
+                          audioController.audioPlayer.pause();
+                          Get.to(() => programListCalenderWindow);
+                        },
+                        icon: SizedBox(
+                          width: 50, // Adjust size as needed
+                          height: 50,
+                          child: Image.asset("assets/pause.png"),
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 40),
-                    IconButton(
-                      onPressed: () {},
-                      icon: new Image.asset("assets/hanlde.png"),
-                      iconSize: 40,
-                      color: Colors.blueAccent[100],
+                    // If you need more buttons, continue adding them in the same pattern:
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: SizedBox(
+                          width: 50, // Specify the width of the image
+                          height: 50,
+                          child: Image.asset("assets/hanlde.png"),
+                        ),
+                      ),
                     ),
                   ],
                 ),
