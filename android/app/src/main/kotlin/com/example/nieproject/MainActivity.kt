@@ -1,4 +1,4 @@
-package com.example.nieproject
+package com.brodcast.nieproject
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -66,7 +66,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '378173638930',
     projectId: 'nieproject-6f36b',
     storageBucket: 'nieproject-6f36b.appspot.com',
-    iosBundleId: 'com.example.nieproject',
+    iosBundleId: 'com.brodcast.nieproject',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,6 +75,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '378173638930',
     projectId: 'nieproject-6f36b',
     storageBucket: 'nieproject-6f36b.appspot.com',
-    iosBundleId: 'com.example.nieproject.RunnerTests',
+    iosBundleId: 'com.brodcast.nieproject.RunnerTests',
   );
 }
