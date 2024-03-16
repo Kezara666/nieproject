@@ -1,16 +1,17 @@
+const apiChat = 'http://alphau.nie.ac.lk/api/admin/tickets';
 
-const apiChat= 'https://alphau.nie.ac.lk/api/admin/tickets';
+const apiAdminTicket = 'http://alphau.nie.ac.lk/api/admin/tickets';
 
-const apiAdminTicket= 'https://alphau.nie.ac.lk/api/admin/tickets';
+const apiLogin = 'http://nieappworld.com/api/login';
 
-const apiLogin = 'https://nieappworld.com/api/login';
+const userChat = 'http://nieappworld.com/api/chat/student/';
 
-const userChat ='https://nieappworld.com/api/chat/student/';
+const sendChat = 'http://nieappworld.com/chat/student/store';
+const programList = 'http://nieappworld.com/api/student/ticket/store';
 
-const sendChat='https://nieappworld.com/chat/student/store';
-const programList='https://nieappworld.com/api/student/ticket/store';
+const appApi = 'http://nieappworld.com/';
 
-const appApi='https://nieappworld.com/';
+const playerOnlineAndroid = "http://172.212.81.114:8000/live";
 
 
 //http://localhost:8000/api/programs

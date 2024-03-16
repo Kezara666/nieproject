@@ -18,7 +18,7 @@ Widget calenderWidowNavbar(double height, double width) {
         valueColor: AlwaysStoppedAnimation<Color>(Colors.greenAccent),
       ),
       SizedBox(
-        height: height / 30,
+        height: height / 50,
       ),
       Row(
         children: [
@@ -60,7 +60,7 @@ Widget calenderWidowNavbar(double height, double width) {
         ],
       ),
       SizedBox(
-        height: height / 25,
+        height: height / 35,
       ),
     ],
   );

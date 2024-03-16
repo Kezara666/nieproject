@@ -24,7 +24,7 @@ class OnAirScreen extends StatefulWidget {
 class _OnAirScreenState extends State<OnAirScreen> {
   double volume = 0.5; // Initial volume value
   final AudioPlayer audioPlayer = AudioPlayer();
-  String audioStreamUrl = 'https://172.212.81.114/live';
+  String audioStreamUrl = playerOnlineAndroid;
   ProgramListCalenderWindow programListCalenderWindow =
       Get.find<ProgramListCalenderWindow>();
   AudioController audioController = Get.find();
@@ -150,10 +150,10 @@ class _OnAirScreenState extends State<OnAirScreen> {
                     border: Border.all(
                         color: Colors.black, width: 3), // Black border
                   ),
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(screenHeight * 0.01),
                   child: TextButton(
                     onPressed: () {
-                      Get.to(() => playRecodingWindow);
+                      //Get.to(() => playRecodingWindow);
                     },
                     child: Align(
                       alignment: Alignment.topCenter,
@@ -161,7 +161,7 @@ class _OnAirScreenState extends State<OnAirScreen> {
                         'ON AIR',
                         style: GoogleFonts.zillaSlab(
                           color: const Color.fromARGB(255, 254, 253, 253),
-                          fontSize: screenHeight / 35,
+                          fontSize: screenHeight / 40,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -218,8 +218,8 @@ class _OnAirScreenState extends State<OnAirScreen> {
                           Get.to(() => loginWindow);
                         },
                         icon: SizedBox(
-                          width: 50, // Adjust size as needed
-                          height: 50,
+                          width: screenWidth * 0.1, // Adjust size as needed
+                          height: screenHeight * 0.1,
                           child: Image.asset("assets/chat.png"),
                         ),
                       ),
@@ -235,8 +235,8 @@ class _OnAirScreenState extends State<OnAirScreen> {
                           Get.to(() => programListCalenderWindow);
                         },
                         icon: SizedBox(
-                          width: 50, // Adjust size as needed
-                          height: 50,
+                          width: screenWidth * 0.1, // Adjust size as needed
+                          height: screenHeight * 0.1,
                           child: Image.asset("assets/pause.png"),
                         ),
                       ),
@@ -246,8 +246,8 @@ class _OnAirScreenState extends State<OnAirScreen> {
                       child: IconButton(
                         onPressed: () {},
                         icon: SizedBox(
-                          width: 50, // Specify the width of the image
-                          height: 50,
+                          width: screenWidth * 0.1, // Adjust size as needed
+                          height: screenHeight * 0.1,
                           child: Image.asset("assets/hanlde.png"),
                         ),
                       ),

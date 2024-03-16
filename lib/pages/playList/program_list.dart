@@ -150,13 +150,13 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        this.author,
-                        style: GoogleFonts.montserrat(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      // Text(
+                      //   this.author,
+                      //   style: GoogleFonts.montserrat(
+                      //     color: Colors.white,
+                      //     fontWeight: FontWeight.bold,
+                      //   ),
+                      // ),
                     ],
                   ),
                   SizedBox(
@@ -207,99 +207,106 @@ class _ProgramListWindowState extends State<ProgramListWindow> {
                       String time =
                           "${DateTime.now().hour}:${DateTime.now().minute}";
 
-                      return ListTile(
-                        onTap: () async {
-                          Fluttertoast.showToast(
-                            msg: audioController.isPlay
-                                ? "Pause Audio"
-                                : "Start Playing",
-                            toastLength: Toast
-                                .LENGTH_LONG, // Duration for which the toast is displayed
-                            gravity:
-                                ToastGravity.BOTTOM, // Position of the toast
-                            timeInSecForIosWeb:
-                                1, // Duration for iOS (ignored on Android)
-                            backgroundColor: const Color.fromARGB(255, 222, 14,
-                                14), // Background color of the toast
-                            textColor: Colors.white, // Text color of the toast
-                            fontSize: 16.0, // Font size of the toast message
-                          );
-                          onTapMethod(widget.programs[index]);
-                        },
-                        leading: Text(
-                          '$index',
-                          style: GoogleFonts.montserrat(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ), // Number on the left corner with white text color
-                        ),
-                        title: Text(
-                          'Episode: ' + widget.programs[index]['episode'],
-                          style: GoogleFonts.montserrat(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ), // Main text with white text color
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (widget.programs[index]['episode'] ==
-                                    audioController.episodeName &&
-                                audioController.isPlay)
-                              WaveWidget(
-                                config: CustomConfig(
-                                  gradients: [
-                                    [
-                                      const Color.fromARGB(255, 243, 245, 247),
-                                      Color.fromARGB(255, 49, 53, 56)
+                      return Padding(
+                        padding: EdgeInsets.only(left:screenWidth/20),
+                        child: ListTile(
+                          onTap: () async {
+                            Fluttertoast.showToast(
+                              msg: audioController.isPlay
+                                  ? "Pause Audio"
+                                  : "Start Playing",
+                              toastLength: Toast
+                                  .LENGTH_LONG, // Duration for which the toast is displayed
+                              gravity:
+                                  ToastGravity.BOTTOM, // Position of the toast
+                              timeInSecForIosWeb:
+                                  1, // Duration for iOS (ignored on Android)
+                              backgroundColor: const Color.fromARGB(255, 222, 14,
+                                  14), // Background color of the toast
+                              textColor: Colors.white, // Text color of the toast
+                              fontSize: 16.0, // Font size of the toast message
+                            );
+                            onTapMethod(widget.programs[index]);
+                          },
+                          leading: Text(
+                            '$index',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ), // Number on the left corner with white text color
+                          ),
+                          title: Text(
+                            'Episode: ' + widget.programs[index]['episode'],
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ), // Main text with white text color
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                height: screenWidth / 60,
+                              ),
+                              if (widget.programs[index]['episode'] ==
+                                      audioController.episodeName &&
+                                  audioController.isPlay)
+                                WaveWidget(
+                                  config: CustomConfig(
+                                    gradients: [
+                                      [
+                                        const Color.fromARGB(255, 243, 245, 247),
+                                        Color.fromARGB(255, 49, 53, 56)
+                                      ],
+                                      [
+                                        const Color.fromARGB(255, 108, 110, 111)
+                                            .withOpacity(0.5),
+                                        const Color.fromARGB(255, 212, 215, 216)
+                                            .withOpacity(0.5)
+                                      ],
+                                      [
+                                        const Color.fromARGB(255, 245, 246, 247)
+                                            .withOpacity(0.8),
+                                        const Color.fromARGB(255, 188, 204, 216)
+                                            .withOpacity(0.8)
+                                      ],
+                                      [
+                                        const Color.fromARGB(255, 222, 224, 227),
+                                        const Color.fromARGB(255, 99, 104, 107)
+                                      ],
                                     ],
-                                    [
-                                      const Color.fromARGB(255, 108, 110, 111)
-                                          .withOpacity(0.5),
-                                      const Color.fromARGB(255, 212, 215, 216)
-                                          .withOpacity(0.5)
-                                    ],
-                                    [
-                                      const Color.fromARGB(255, 245, 246, 247)
-                                          .withOpacity(0.8),
-                                      const Color.fromARGB(255, 188, 204, 216)
-                                          .withOpacity(0.8)
-                                    ],
-                                    [
-                                      const Color.fromARGB(255, 222, 224, 227),
-                                      const Color.fromARGB(255, 99, 104, 107)
-                                    ],
-                                  ],
-                                  durations: [35000, 19440, 10800, 6000],
-                                  heightPercentages: [0.25, 0.26, 0.28, 0.31],
+                                    durations: [35000, 19440, 10800, 6000],
+                                    heightPercentages: [0.25, 0.26, 0.28, 0.31],
+                                  ),
+                                  size: Size(screenWidth / 20, screenHeight / 50),
+                                  waveAmplitude: 10,
                                 ),
-                                size: Size(screenWidth / 20, screenHeight / 50),
-                                waveAmplitude: 10,
+                              if (widget.programs[index]['episode'] !=
+                                      audioController.episodeName ||
+                                  !audioController.isPlay)
+                                Text(
+                                  widget.programs[index]['duration'] ?? '',
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ), // Time with white text color
+                                ),
+                                
+                              IconButton(
+                                onPressed: () {
+                                  // updateProgress(
+                                  //     widget.programs[index]['duration']);
+                                  showPopupMenuDownload(context, screenHeight,
+                                      widget.programs[index]);
+                                },
+                                icon: Icon(
+                                  Icons.more_vert,
+                                  color: Colors
+                                      .white, // Three-dots icon with white color
+                                ),
                               ),
-                            if (widget.programs[index]['episode'] !=
-                                    audioController.episodeName ||
-                                !audioController.isPlay)
-                              Text(
-                                widget.programs[index]['duration'] ?? '',
-                                style: GoogleFonts.montserrat(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ), // Time with white text color
-                              ),
-                            IconButton(
-                              onPressed: () {
-                                // updateProgress(
-                                //     widget.programs[index]['duration']);
-                                showPopupMenuDownload(context, screenHeight,
-                                    widget.programs[index]);
-                              },
-                              icon: Icon(
-                                Icons.more_vert,
-                                color: Colors
-                                    .white, // Three-dots icon with white color
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },
