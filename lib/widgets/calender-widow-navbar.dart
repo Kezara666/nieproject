@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:nieproject/enviroment/font.dart';
 import 'package:nieproject/services/functions/AudioController/audio_controller.dart';
 import 'package:nieproject/widgets/background-gradiant-button.dart';
 
@@ -28,7 +29,7 @@ Widget calenderWidowNavbar(double height, double width) {
               text: TextSpan(
                 children: <TextSpan>[
                   TextSpan(
-                    text: "Program Name :"+" "+ controller.programName,
+                    text:  controller.programName,
                     style: TextStyle(
                       fontSize: width/30,
                       fontWeight: FontWeight.bold,
@@ -36,7 +37,7 @@ Widget calenderWidowNavbar(double height, double width) {
                     ),
                   ),
                   TextSpan(
-                    text: ' \n\n' +"Episode Name : " + controller.episodeName,
+                    text: ' \n\n' +translate("episode", language: language)+": " + controller.episodeName,
                     style: TextStyle(
                       fontSize: 12,
                       color: const Color.fromARGB(255, 162, 161, 161)

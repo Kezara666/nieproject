@@ -1,21 +1,31 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nieproject/enviroment/api.dart';
+import 'package:nieproject/enviroment/font.dart';
+import 'package:nieproject/models/EpisodeProvider/program_episode.dart';
+import 'package:nieproject/models/ProgramProvider/Episodes_programs.dart';
+import 'package:nieproject/pages/Menu/menu.dart';
 import 'package:nieproject/pages/playList/program_list.dart';
 import 'package:nieproject/pages/playRecoding/play-recoding.dart';
 import 'package:nieproject/pages/player/player.dart';
+import 'package:nieproject/pages/twoCirclePlayListWindow/two_circle_list_window.dart';
 import 'package:nieproject/services/functions/AudioController/audio_controller.dart';
 import 'package:nieproject/utils/colors.dart';
 import 'package:nieproject/widgets/calender-widow-navbar.dart';
 import 'package:nieproject/widgets/hamburger.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
+import 'package:audio_wave/audio_wave.dart';
+import 'package:intl/intl.dart';
 
 class ProgramListCalenderWindow extends StatefulWidget {
   const ProgramListCalenderWindow({Key? key});
@@ -26,7 +36,6 @@ class ProgramListCalenderWindow extends StatefulWidget {
 }
 
 class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
-  ProgramListWindow programListWindow = Get.find();
   AudioController audioController = Get.find();
   OnAirScreen onAirScreen = Get.find();
   PlayRecodingWindow playRecodingWindow = Get.find();
@@ -34,41 +43,27 @@ class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  List<dynamic> programsList = [];
+  MenuWindow menuWindow = Get.find();
+  CalendarController _controller = CalendarController();
+
+  EpisodeProvider episodeProvider = Get.find();
+  List<ProgramEpisode> _episodes = List.empty();
+
+  //to be remove
+  TwoCirclePlayList _twoCirclePlayList = Get.find();
 
   Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('${appApi}api/programs'));
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      final List<dynamic> programs = data['programs_list'];
-
-      // Group items by program_name
-      final groupedPrograms = groupBy(programs, (obj) => obj['program_name']);
-
-      setState(() {
-        this.programsList = groupedPrograms.values.toList();
-      });
-    } else {
-      throw Exception('Failed to load data');
-    }
+    await episodeProvider.fetchEpisodes().then((value) {
+      _episodes = value; // Update the UI after fetching episodes
+    }).catchError((error) {
+      print('Error fetching episodes: $error');
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    // Call the async function to initialize and play audio when the widget is initialized
-    Fluttertoast.showToast(
-      msg: "If you need choose program by date press a date ",
-      toastLength:
-          Toast.LENGTH_LONG, // Duration for which the toast is displayed
-      gravity: ToastGravity.BOTTOM, // Position of the toast
-      timeInSecForIosWeb: 3, // Duration for iOS (ignored on Android)
-      backgroundColor: const Color.fromARGB(
-          255, 222, 14, 14), // Background color of the toast
-      textColor: Colors.white, // Text color of the toast
-      fontSize: 16.0, // Font size of the toast message
-    );
+
     fetchData();
   }
 
@@ -76,368 +71,512 @@ class _ProgramListCalenderWindow extends State<ProgramListCalenderWindow> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    ;
 
-    var children2 = [
-      Row(
-        children: [
-          IconButton(
-              onPressed: () {
-                Get.to(() => onAirScreen);
-              },
-              icon: const Icon(Icons.arrow_back),
-              color: Colors.white),
-          Expanded(
-            child: Center(
-                child: Center(
-              child: CircleAvatar(
-                  radius: screenHeight /
-                      40, // Increase the radius to make it larger
-                  backgroundImage: AssetImage('assets/logo.png'),
-                  backgroundColor: Colors.white // Replace with your logo image
-                  ),
-            )
-                // child: CircleAvatar(
-                //   radius: 20.0, // Increase the radius to make it larger
-                //   backgroundImage: AssetImage('assets/logo.png'),
-                //   backgroundColor:
-                //       playAvatar, // Replace with your logo image
-                // ),
-                ),
-          ),
-          IconButton(
-              onPressed: () {
-                showPopupMenu(context);
-              },
-              icon: const Icon(Icons.drag_indicator_rounded),
-              color: Colors.white),
-        ],
-      ),
-      if (this.isPressed == 0)
-        SizedBox(
-          height: screenHeight / 100,
-        ),
-      if (this.isPressed == 0)
-        SizedBox(width: screenWidth * 0.99, child: CalenderContainer()),
-      if (this.isPressed == 0)
-        Expanded(child: ContainerCalender(this.isPressed)),
-      if (this.isPressed == 1)
-        Expanded(child: ContainerCalender(this.isPressed)),
-      if (this.isPressed == 1) CalenderContainer(),
-      if (this.isPressed == 1)
-        SizedBox(
-          height: screenHeight / 60,
-        ),
-      calenderWidowNavbar(screenHeight, screenWidth),
-    ];
-    return WillPopScope(
-      onWillPop: () async {
-        // await showDialog or Show add banners or whatever
-        // return true if the route to be popped
-        return false; // return false if you want to disable device back button click
-      },
-      child: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(color: Color.fromRGBO(3, 20, 48, 1)),
-          child: SafeArea(
-            child: Column(
-              children: children2,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-
-//list of proframs
-  Widget ContainerCalender(double isPressed) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (screenHeight > 700)
-          Column(
-            children: [
-              SizedBox(
-                height: screenHeight / 60,
-              ),
-              Center(
-                child: Text(
-                  'Choose by Program',
-                  style: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: screenHeight / 80,
-              ),
-            ],
-          ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: this
-                .programsList
-                .length, // Replace with your desired item count
-            itemBuilder: (context, index) {
-              // Simulated time
-              final program = this.programsList[index];
-              String time = "${DateTime.now().hour}:${DateTime.now().minute}";
-
-              return Padding(
-                  padding: EdgeInsets.only(left: screenWidth / 10),
-                  child: ListTitlesOfProgramList(
-                      program, isPressed, screenWidth, screenHeight),
-                );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  ListTile ListTitlesOfProgramList(
-      program, double isPressed, double screenWidth, double screenHeight) {
-    return ListTile(
-        leading: Text(
-          '${program[0]['program_name']}',
-          style: GoogleFonts.montserrat(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ), // Number on the left corner with white text color
-        ),
-        onTap: () {
-          if (isPressed == 0) {
-            audioController.programName = program[0]['program_name'];
-            Get.to(() => ProgramListWindow(programs: program));
-          } else {
-            Get.to(() => ProgramListWindow(
-                programs: program.cast<Map<String, dynamic>>()));
-          }
-        },
-        title: Text(
-          ' ',
-          style: const TextStyle(
-              color: Colors.white), // Main text with white text color
-        ),
-        trailing: GetBuilder<AudioController>(builder: (controller) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (program[0]['program_name'] == controller.programName &&
-                  controller.isPlay)
-                WaveWidget(
-                  config: CustomConfig(
-                    gradients: [
-                      [
-                        const Color.fromARGB(255, 243, 245, 247),
-                        Color.fromARGB(255, 49, 53, 56)
-                      ],
-                      [
-                        const Color.fromARGB(255, 108, 110, 111)
-                            .withOpacity(0.5),
-                        const Color.fromARGB(255, 212, 215, 216)
-                            .withOpacity(0.5)
-                      ],
-                      [
-                        const Color.fromARGB(255, 245, 246, 247)
-                            .withOpacity(0.8),
-                        const Color.fromARGB(255, 188, 204, 216)
-                            .withOpacity(0.8)
-                      ],
-                      [
-                        const Color.fromARGB(255, 222, 224, 227),
-                        const Color.fromARGB(255, 99, 104, 107)
-                      ],
+    return Material(
+        type: MaterialType.transparency,
+        child: SafeArea(
+            child: Container(
+                decoration:
+                    const BoxDecoration(color: Color.fromRGBO(3, 20, 48, 1)),
+                child: SingleChildScrollView(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  //nav bar
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Get.to(() => menuWindow);
+                        },
+                        icon: const Icon(Icons.arrow_back),
+                        color: Colors.white,
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Container(
+                            width: screenWidth / 10,
+                            height: screenHeight / 10,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/logo.png'),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          showPopupMenu(context);
+                        },
+                        icon: const Icon(Icons.more_vert),
+                        color: Colors.white,
+                      ),
                     ],
-                    durations: [35000, 19440, 10800, 6000],
-                    heightPercentages: [0.25, 0.26, 0.28, 0.31],
                   ),
-                  size: Size(screenWidth / 10, screenHeight / 30),
-                  waveAmplitude: 10,
-                ),
-              if (program[0]['program_name'] != controller.programName ||
-                  !controller.isPlay)
-                Text(
-                  '${program[0]['episode_time']}',
-                  style: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                  Column(
+                    children: [
+                      Center(
+                        child: Text(
+                          translate('Choose by Date', language: language),
+                          style: GoogleFonts.montserrat(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.white,
+                        thickness: 1.0,
+                      ),
+                      Padding(
+                        padding: screenHeight > 700
+                            ? EdgeInsets.all(screenWidth / 20)
+                            : EdgeInsets.all(0),
+                        child: Padding(
+                          padding: EdgeInsets.all(screenWidth / 30),
+                          child: Container(
+                            height: screenHeight / 3,
+                            decoration: BoxDecoration(
+                              color: playAvatar,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Transform.scale(
+                              scaleY: 0.8,
+                              child: SfCalendar(
+                                onSelectionChanged: (calendarSelectionDetails) {
+                                  DateTime? date =
+                                      calendarSelectionDetails.date;
+
+                                  setState(() {
+                                    print(date);
+                                    if (_selectedDay == date) {}
+                                    _selectedDay = date;
+                                    String formattedDate =
+                                        DateFormat('yyyy-MM-dd')
+                                            .format(_selectedDay!);
+                                    _episodes = episodeProvider
+                                        .filterEpisodesByDate(formattedDate);
+                                  });
+                                },
+                                view: CalendarView.month,
+                                controller: _controller,
+                                headerHeight: screenHeight / 20,
+                                showNavigationArrow: true,
+                                headerStyle: CalendarHeaderStyle(
+                                    textStyle: TextStyle(color: Colors.white),
+                                    backgroundColor: playAvatar),
+                                cellBorderColor: playAvatar,
+                                monthViewSettings: MonthViewSettings(
+                                  appointmentDisplayMode:
+                                      MonthAppointmentDisplayMode.appointment,
+                                  showAgenda: false,
+                                  navigationDirection:
+                                      MonthNavigationDirection.horizontal,
+                                  appointmentDisplayCount: 3,
+                                  dayFormat: 'EEE',
+                                  agendaStyle: AgendaStyle(
+                                    backgroundColor: Colors.white,
+                                    appointmentTextStyle: TextStyle(
+                                      fontSize: 13,
+                                      color: const Color.fromARGB(
+                                          255, 247, 246, 246),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    dayTextStyle: TextStyle(
+                                      fontSize: 13,
+                                      color: const Color.fromARGB(
+                                          255, 245, 244, 244),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    dateTextStyle: TextStyle(
+                                      fontSize: 25,
+                                      color: const Color.fromARGB(
+                                          255, 245, 243, 243),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  monthCellStyle: MonthCellStyle(
+                                    backgroundColor: playAvatar,
+                                    textStyle: TextStyle(color: Colors.white),
+                                    todayBackgroundColor: playAvatar,
+                                    trailingDatesBackgroundColor: playAvatar,
+                                    leadingDatesBackgroundColor: playAvatar,
+                                    // cellBorderColor: Colors.transparent,
+                                  ),
+                                ),
+                                selectionDecoration: BoxDecoration(
+                                  backgroundBlendMode: BlendMode.colorBurn,
+                                  color: const Color.fromARGB(255, 207, 204,
+                                      204), // Change this color as desired
+                                  shape: BoxShape
+                                      .circle, // You can also use other shapes
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.more_vert,
-                  color: Colors.white, // Three-dots icon with white color
-                ),
-              ),
-            ],
-          );
-        }));
+                  /////////////////////////////////////////////////////////////////////////////// LIST OF EPISODES
+                  GetBuilder<AudioController>(
+                    builder: (_) => Container(
+                      height: 200,
+                      child: ListView.builder(
+                        itemCount: _episodes.length,
+                        itemBuilder: (context, index) {
+                          String time =
+                              "${DateTime.now().hour}:${DateTime.now().minute}";
+
+                          return Padding(
+                            padding: EdgeInsets.only(left: screenWidth / 20),
+                            child: ListTile(
+                              onTap: () async {
+                                /////////////////////////////////////play episode
+                                onTapMethod(_episodes[index]);
+                                Fluttertoast.showToast(
+                                  msg: audioController.isPlay
+                                      ? "Start Playing"
+                                      : "Pause Audio",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 222, 14, 14),
+                                  textColor: Colors.white,
+                                  fontSize: 16.0,
+                                );
+                              },
+                              leading: Text(
+                                '${index + 1}',
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              title: Text(
+                                (_episodes[index].programName.isNotEmpty
+                                    ? _episodes[index].programName
+                                    : "No episodes"),
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: screenHeight / 50,
+                                ),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    height: screenWidth / 60,
+                                  ),
+                                  if (_episodes[index].episode ==
+                                          audioController.episodeName &&
+                                      audioController.isPlay &&
+                                      audioController.programName ==
+                                          _episodes[index].programName)
+                                    AudioWave(
+                                      height: 32,
+                                      width: 32,
+                                      spacing: 2.5,
+                                      animationLoop: 9999,
+                                      bars: [
+                                        AudioWaveBar(
+                                            heightFactor: 0.7,
+                                            color: Colors
+                                                .lightBlueAccent), // Light blue bar
+                                        AudioWaveBar(
+                                            heightFactor: 0.8,
+                                            color: Colors.blue), // Blue bar
+                                        AudioWaveBar(
+                                            heightFactor: 1,
+                                            color: Color.fromARGB(255, 9, 117,
+                                                205)), // Cyan-like bar
+                                        AudioWaveBar(
+                                            heightFactor: 0.9,
+                                            color: Colors
+                                                .blue), // Specify the color here, e.g., same as the second bar
+                                      ],
+                                    ),
+                                  if (_episodes[index].episode !=
+                                          audioController.episodeName ||
+                                      !audioController.isPlay && !(_episodes[index].episode ==
+                                          audioController.episodeName &&
+                                      audioController.programName !=
+                                          _episodes[index].programName))
+                                    Text(
+                                      RemoveSeconds(_episodes[index].duration),
+                                      style: GoogleFonts.montserrat(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  if (_episodes[index].episode ==
+                                          audioController.episodeName &&
+                                      audioController.programName !=
+                                          _episodes[index].programName)
+                                    Text(
+                                      RemoveSeconds(_episodes[index].duration),
+                                      style: GoogleFonts.montserrat(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  IconButton(
+                                    onPressed: () {
+                                      showPopupMenuDownload(context,
+                                          screenHeight, _episodes[index]);
+                                    },
+                                    icon: Icon(
+                                      Icons.more_vert,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  //////////////////////////////////////////////////?Down Nava Bar
+                  calenderWidowNavbar(screenHeight, screenWidth)
+                ])))));
   }
 
-//down set calender 
-  Widget CalenderContainer() {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
-    return Column(
-      children: [
-        Center(
-          child: Text(
-            'Choose by Date',
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+  Future<void> initAndPlayAudio(String url) async {
+    try {
+      await audioController.initAndPlayAudio(url);
+    } catch (e) {
+      print('Error playing audio: $e');
+
+      Fluttertoast.showToast(
+        msg: e.toString(),
+        toastLength:
+            Toast.LENGTH_LONG, // Duration for which the toast is displayed
+        gravity: ToastGravity.BOTTOM, // Position of the toast
+        timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+        backgroundColor: const Color.fromARGB(
+            255, 222, 14, 14), // Background color of the toast
+        textColor: Colors.white, // Text color of the toast
+        fontSize: 16.0, // Font size of the toast message
+      );
+    }
+  }
+
+  void showPopupMenuDownload(
+      BuildContext context, double screenHeight, dynamic listObject) async {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final Offset offset = Offset(overlay.size.width - 50,
+        screenHeight / 1.5); // Adjust the values based on your UI
+    final result = await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(offset.dx, offset.dy, 0, 0),
+      items: [
+        PopupMenuItem<String>(
+          value: 'Open',
+          child: const Text('Open'),
         ),
-        Divider(
-          color: Colors.white,
-          thickness: 1.0,
-        ),
-        
-        Padding(
-          padding: screenHeight>700? EdgeInsets.all(screenWidth / 20):EdgeInsets.all(0),
-          child: Container(
-            //margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-            decoration: BoxDecoration(
-                color: playAvatar, borderRadius: BorderRadius.circular(20)),
-            child: TableCalendar(
-              firstDay: DateTime.utc(2010, 10, 16),
-              lastDay: DateTime.utc(2030, 3, 14),
-              focusedDay: DateTime.now(),
-              calendarStyle: CalendarStyle(
-                disabledDecoration: BoxDecoration(),
-                defaultTextStyle: TextStyle(color: Colors.white),
-                outsideDaysVisible: false,
-                weekendTextStyle: TextStyle(color: Colors.white),
-              ),
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  if (isPressed == 0) {
-                    isPressed = 1;
-                    fetchDataForSelectedDate(selectedDay);
-                    // Fluttertoast.showToast(
-                    //   msg: "If you need choose by program press same date again ",
-                    //   toastLength: Toast.LENGTH_LONG,
-                    //   gravity: ToastGravity.BOTTOM,
-                    //   timeInSecForIosWeb: 1,
-                    //   backgroundColor: const Color.fromARGB(255, 222, 14, 14),
-                    //   textColor: Colors.white,
-                    //   fontSize: 16.0,
-                    // );
-                    print("pressed" + isPressed.toString());
-                  }
-                  if (_selectedDay == selectedDay) {
-                    if (isPressed == 1) {
-                      isPressed = 0;
-                      fetchData();
-                      Fluttertoast.showToast(
-                        msg: "If you need choose by Date press a date ",
-                        toastLength: Toast.LENGTH_LONG,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: const Color.fromARGB(255, 222, 14, 14),
-                        textColor: Colors.white,
-                        fontSize: 10.0,
-                      );
-                    }
-                  }
-                  _selectedDay = selectedDay;
-                });
-              },
-              headerStyle: HeaderStyle(
-                leftChevronIcon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                  size: screenWidth / 20,
-                ),
-                rightChevronIcon: Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white,
-                  size: screenWidth / 20,
-                ),
-                formatButtonTextStyle: TextStyle(color: Colors.white),
-                formatButtonDecoration:
-                    BoxDecoration(color: Colors.transparent),
-                titleTextStyle: TextStyle(color: Colors.white),
-              ),
-              daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: TextStyle(color: Colors.white),
-                weekendStyle: TextStyle(color: Colors.white24),
-              ),
-            ),
-          ),
+        PopupMenuItem<String>(
+          value: 'Download',
+          child: const Text('Download'),
         ),
       ],
     );
+
+    // Handle the selected option
+    if (result != null) {
+      handleMenuOption(result, listObject);
+    }
   }
 
-  Future<void> fetchDataForSelectedDate(DateTime selectedDate) async {
-    final formattedDate =
-        "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
+  Future<void> pause() async {
+    try {
+      await audioController.pause();
+      audioController.isPlay = false;
+      await audioController.audioPlayer.pause();
+    } catch (e) {
+      print('Error playing audio: $e');
 
-    // Flatten the list of lists into a single list of programs
-    final List<dynamic> allPrograms =
-        programsList.expand((element) => element).toList();
-
-    //print('All Programs: $allPrograms');
-    print('Formatted Date: $formattedDate');
-
-    // Filter programs based on the selected date
-    final filteredPrograms = allPrograms.where((program) {
-      // Parse the episode date string into a DateTime object
-      final episodeDate = DateTime.parse(program['episode_date']);
-      // Convert the selected date into a DateTime object for comparison
-      final selectedDateTime = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-      );
-      print('Episode Date: $episodeDate');
-      print('Formatted Date: $selectedDateTime');
-      // Check if the episode date matches the selected date
-      return episodeDate.isAtSameMomentAs(selectedDateTime);
-    }).toList();
-
-    print('Filtered Programs: $filteredPrograms');
-    print('Filtered Programs: $filteredPrograms');
-    if (filteredPrograms.isNotEmpty) {
-      setState(() {
-        programsList = [filteredPrograms];
-
-        // Wrap filtered programs in a list to match the structure
-        isPressed = 1;
-      });
-    } else {
-      setState(() {
-        isPressed = 0;
-      });
       Fluttertoast.showToast(
-        msg: "This Day No Any Recodings",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: const Color.fromARGB(255, 222, 14, 14),
-        textColor: Colors.white,
-        fontSize: 10.0,
+        msg: e.toString(),
+        toastLength:
+            Toast.LENGTH_LONG, // Duration for which the toast is displayed
+        gravity: ToastGravity.BOTTOM, // Position of the toast
+        timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+        backgroundColor: const Color.fromARGB(
+            255, 222, 14, 14), // Background color of the toast
+        textColor: Colors.white, // Text color of the toast
+        fontSize: 16.0, // Font size of the toast message
       );
     }
   }
 
-  Map<String, List<Map<String, dynamic>>> groupBy(
-      List<dynamic> iterable, String Function(Map<String, dynamic>) key) {
-    final Map<String, List<Map<String, dynamic>>> result = {};
+  int convertTimeToSeconds(String timeString) {
+    List<String> timeComponents = timeString.split(':');
 
-    for (final item in iterable) {
-      final k = key(item);
-      result[k] = result[k] ?? [];
-      result[k]!.add(item);
+    if (timeComponents.length == 3) {
+      int hours = int.parse(timeComponents[0]);
+      int minutes = int.parse(timeComponents[1]);
+      int seconds = int.parse(timeComponents[2]);
+
+      int totalSeconds = hours * 3600 + minutes * 60 + seconds;
+      return totalSeconds;
+    } else {
+      // Handle invalid time format
+      print('Invalid time format');
+      return 0;
+    }
+  }
+
+  void updateProgress(String fullProgramTime) {
+    audioController.GetAudioServiceTime(convertTimeToSeconds(fullProgramTime));
+  }
+
+  Future<void> onTapMethod(ProgramEpisode program) async {
+    if (audioController.isPlay) {
+      this.audioController.isPlay = false;
+      await pause();
+      this.audioController.isPlay = true;
+      updateProgress(program.duration!);
+      initAndPlayAudio("${appApi}${program.programFile}");
+
+    } else if (!audioController.isPlay) {
+      this.audioController.isPlay = true;
+      updateProgress(program.duration!);
+      initAndPlayAudio("${appApi}${program.programFile}");
     }
 
-    return result;
+    // Set the program name and episode name in the audio controller
+    audioController.programName = program.programName ?? '';
+    audioController.episodeName = program.episode ?? '';
+    audioController.update();
+
+    // audioController.PlayPlayList(episodeProvider.episodes);
   }
+
+  // Function to handle the selected menu option
+  void handleMenuOption(String option, dynamic listObject) async {
+    switch (option) {
+      case 'Open':
+        // Handle settings
+        onTapMethod(listObject);
+
+        break;
+      case 'Download':
+        // Handle change language
+        await _requestPermission();
+        await fileDownload(listObject);
+        break;
+      case 'about':
+        // Handle about
+        break;
+      case 'logout':
+        // Handle logout
+        break;
+      // Add more cases for additional options if needed
+    }
+  }
+
+  Future<void> _requestPermission() async {
+    PermissionStatus status = await Permission.manageExternalStorage.request();
+
+    if (status == PermissionStatus.granted) {
+      Fluttertoast.showToast(
+        msg: "permission granted ",
+        toastLength:
+            Toast.LENGTH_LONG, // Duration for which the toast is displayed
+        gravity: ToastGravity.BOTTOM, // Position of the toast
+        timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+        backgroundColor: const Color.fromARGB(
+            255, 222, 14, 14), // Background color of the toast
+        textColor: Colors.white, // Text color of the toast
+        fontSize: 16.0, // Font size of the toast message
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: "No permission to Storage please allow that",
+        toastLength:
+            Toast.LENGTH_LONG, // Duration for which the toast is displayed
+        gravity: ToastGravity.BOTTOM, // Position of the toast
+        timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+        backgroundColor: const Color.fromARGB(
+            255, 222, 14, 14), // Background color of the toast
+        textColor: Colors.white, // Text color of the toast
+        fontSize: 16.0, // Font size of the toast message
+      );
+      // Permission denied.
+      // You might want to show a message to the user explaining why the permission is needed.
+    }
+  }
+
+  Future<void> fileDownload(dynamic path) async {
+    PermissionStatus status = await Permission.manageExternalStorage.status;
+
+    if (status != PermissionStatus.granted) {
+      await _requestPermission();
+      return;
+    }
+    FileDownloader.downloadFile(
+        url: "${appApi}${path['program_file']}",
+        name: path['program_name'] + path['episode'], //(optional)
+        onProgress: (fileName, progress) {
+          Fluttertoast.showToast(
+            msg: fileName.toString() +
+                " " +
+                "downloading " +
+                progress.toString() +
+                "%",
+            toastLength:
+                Toast.LENGTH_LONG, // Duration for which the toast is displayed
+            gravity: ToastGravity.BOTTOM, // Position of the toast
+            timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+            backgroundColor: const Color.fromARGB(
+                255, 222, 14, 14), // Background color of the toast
+            textColor: Colors.white, // Text color of the toast
+            fontSize: 16.0, // Font size of the toast message
+          );
+        },
+        onDownloadCompleted: (String path) {
+          print('FILE DOWNLOADED TO PATH: ');
+          Fluttertoast.showToast(
+            msg: "FILE DOWNLOADED TO PATH: " + path.toString(),
+            toastLength:
+                Toast.LENGTH_LONG, // Duration for which the toast is displayed
+            gravity: ToastGravity.BOTTOM, // Position of the toast
+            timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+            backgroundColor: const Color.fromARGB(
+                255, 222, 14, 14), // Background color of the toast
+            textColor: Colors.white, // Text color of the toast
+            fontSize: 16.0, // Font size of the toast message
+          );
+        },
+        onDownloadError: (String error) {
+          print('DOWNLOAD ERROR: $error');
+          Fluttertoast.showToast(
+            msg: "DOWNLOAD ERROR: $error",
+            toastLength:
+                Toast.LENGTH_LONG, // Duration for which the toast is displayed
+            gravity: ToastGravity.BOTTOM, // Position of the toast
+            timeInSecForIosWeb: 1, // Duration for iOS (ignored on Android)
+            backgroundColor: const Color.fromARGB(
+                255, 222, 14, 14), // Background color of the toast
+            textColor: Colors.white, // Text color of the toast
+            fontSize: 16.0, // Font size of the toast message
+          );
+        });
+  }
+}
+
+String RemoveSeconds(String? duration) {
+  if (duration != null && duration.isNotEmpty) {
+    List<String> parts = duration.split(':');
+    if (parts.length >= 2) {
+      return duration =
+          '${parts[0]}:${parts[1]}'; // Concatenate hours and minutes
+    }
+  }
+  return "";
 }

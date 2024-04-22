@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nieproject/enviroment/font.dart';
 import 'package:nieproject/services/functions/AudioController/audio_controller.dart';
 
 import 'package:nieproject/utils/colors.dart';
@@ -29,7 +30,7 @@ Column playButtonWithDownBar(double height, double width, double value,
               text: TextSpan(
                 children: <TextSpan>[
                   TextSpan(
-                    text: "Episode:"+programTitle,
+                    text: translate("episode", language: language)+" : "+programTitle,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

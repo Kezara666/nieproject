@@ -33,6 +33,16 @@ const onFire = LinearGradient(
   ],
 );
 
+const onAutomation = LinearGradient(
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+  colors: [
+    Color.fromARGB(255, 134, 174, 137), // Replace with your desired colors
+
+    Color.fromARGB(255, 15, 188, 52),
+  ],
+);
+
 const playerVolumeSmallBall = [
   Color.fromARGB(255, 63, 117, 2),
   Color.fromARGB(255, 111, 221, 157),

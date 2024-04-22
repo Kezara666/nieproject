@@ -11,8 +11,8 @@ const programList = 'http://nieappworld.com/api/student/ticket/store';
 
 const appApi = 'http://nieappworld.com/';
 
-const playerOnlineAndroid = "http://172.212.81.114:8000/live";
-
+const playerOnlineAndroid = "http://nieappworld.com:8000/live";
+const playerOnlineIOS = "http://nieappworld.com:8000/live";
 
 //http://localhost:8000/api/programs
 // http://localhost:8000/api/student/tickets/${username}

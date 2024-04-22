@@ -1,24 +1,29 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:nieproject/enviroment/api.dart';
+import 'package:nieproject/models/EpisodeProvider/program_episode.dart';
 
 class AudioController extends GetxController {
   final AudioPlayer audioPlayer = AudioPlayer();
   double volume = 0.5; // Initial volume value
   bool isPlay = false;
+  int language = 0;
   String audioStreamUrl = '';
   List<String> _playlist = [];
   int _currentIndex = 0;
-  List<Map<String, dynamic>> programsList = [];
-  String programName = "";
+  List<ProgramEpisode> programsList = [];
+  String programName = "Program Title";
   String episodeName = "";
   double progress = 0;
-  int programDuration = 0 ;
+  int programDuration = 0;
+  bool error = false;
+  String episodePlayedTime = "";
 
   Future<void> initAndPlayAudio(String url) async {
     audioStreamUrl = url;
@@ -26,16 +31,25 @@ class AudioController extends GetxController {
     try {
       await audioPlayer.setUrl(url);
       if (!isPlay) {
-        await audioPlayer.play();
+        //added new here
         isPlay = true;
+        error = false;
+        update();
+        await audioPlayer.play();
+
         update();
       } else {
         isPlay = true;
+        error = false;
         await audioPlayer.pause();
+        await audioPlayer.setVolume(1.0);
         await audioPlayer.play();
         update();
       }
     } catch (e) {
+      isPlay = false;
+      error = true;
+      update();
       print('Error playing audio: $e');
     }
   }
@@ -87,8 +101,12 @@ class AudioController extends GetxController {
   }
 
   GetAudioServiceTime(int program) {
-    audioPlayer.positionStream.listen((position) {
+    this.programDuration = program;
+    audioPlayer.positionStream.listen((position) async {
       this.progress = position.inSeconds.toDouble() / program;
+      if (progress == 1) {
+        await pause();
+      }
       // Fluttertoast.showToast(
       //   msg: progress.toString(),
       //   toastLength:
@@ -116,49 +134,71 @@ class AudioController extends GetxController {
     update();
   }
 
-  void _playNext() {
-    _currentIndex = (_currentIndex + 1) % _playlist.length;
-    audioPlayer.setUrl(_playlist[_currentIndex]);
-    audioPlayer.play();
-    //change UI
-    this.audioStreamUrl = _playlist[_currentIndex];
-    Map<String, dynamic>? targetProgram = programsList.firstWhere((program) =>
-        program['program_file'] == this.audioStreamUrl.replaceAll(appApi, ""));
-    programName = targetProgram["program_name"];
-    episodeName = targetProgram["episode"];
-    update();
-    GetAudioServiceTime(targetProgram["duration"]);
-  }
+  // void _playNext() {
+  //   if (_currentIndex < _playlist.length) {
+  //     _currentIndex = (_currentIndex + 1) % _playlist.length;
+  //     audioPlayer.setUrl(_playlist[_currentIndex]);
+  //     audioPlayer.play();
+  //     //change UI
+  //     this.audioStreamUrl = _playlist[_currentIndex];
+  //     ProgramEpisode? targetProgram = programsList.firstWhere((program) =>
+  //         program.programFile == this.audioStreamUrl.replaceAll(appApi, ""));
+  //     programName = targetProgram.programName;
+  //     episodeName = targetProgram.episode;
+  //     update();
+  //     GetAudioServiceTime(convertTimeToSeconds(targetProgram.duration));
+  //   }
+  // }
 
-  void PlayPlayList(List<Map<String, dynamic>> list) async {
-    this.programsList = list;
+  // void PlayPlayList(List<ProgramEpisode> list) async {
+  //   // Update the programsList with the provided list
+  //   this.programsList = list;
 
-    _playlist = list
-        .where((item) => item.keys
-            .any((key) => key.contains('program_file') && item[key] is String))
-        .map<String>((item) {
-      // Get the string value associated with 'program_file' key and append ${appApi}
-      return '${appApi}' + (item['program_file'] as String);
-    }).toList();
+  //   // Filter the list to get only items with valid program_file
+  //   _playlist =
+  //       list.where((item) => item.programFile.isNotEmpty).map<String>((item) {
+  //     // Get the program file URL and append ${appApi}
+  //     return '${appApi}${item.programFile}';
+  //   }).toList();
 
-    this.audioStreamUrl = _playlist[_currentIndex];
-    Map<String, dynamic>? targetProgram = programsList.firstWhere((program) =>
-        program['program_file'] == this.audioStreamUrl.replaceAll(appApi, ""));
-    programName = targetProgram["program_name"];
-    episodeName = targetProgram["episode"];
-    update();
-    GetAudioServiceTime(convertTimeToSeconds(targetProgram["duration"]));
+  //   // Set the initial audioStreamUrl to the first item in the playlist
+  //   this.audioStreamUrl = _playlist[_currentIndex];
 
-    await audioPlayer.setUrl(_playlist[_currentIndex]);
-    isPlay = true;
-    await audioPlayer.play();
+  //   // Find the target program based on the current audio stream URL
+  //   ProgramEpisode? targetProgram = programsList.firstWhereOrNull((program) =>
+  //       program.programFile == this.audioStreamUrl.replaceAll(appApi, ""));
 
-    audioPlayer.playerStateStream.listen((PlayerState state) {
-      if (state.processingState == ProcessingState.completed) {
-        _playNext();
-      }
-    });
-  }
+  //   // Update programName and episodeName based on the target program
+  //   programName = targetProgram?.programName ?? '';
+  //   episodeName = targetProgram?.episode ?? '';
+  //   episodePlayedTime = targetProgram?.episodeTime ?? '';
+
+  //   update();
+
+  //   // Get audio service time and update audio player URL
+  //   GetAudioServiceTime(convertTimeToSeconds(targetProgram?.duration ?? ""));
+  //   await audioPlayer.setUrl(_playlist[_currentIndex]);
+
+  //   // Start playing the audio
+  //   isPlay = true;
+  //   await audioPlayer.play();
+
+  //   // Listen to player state changes
+  //   // audioPlayer.playerStateStream.listen((PlayerState state) {
+  //   //   if (state.processingState == ProcessingState.completed) {
+
+  //   //   }
+  //   // });
+
+  //   audioPlayer.positionStream.listen((position) async {
+  //     this.progress = position.inSeconds.toDouble() /
+  //         convertTimeToSeconds(targetProgram?.duration ?? "");
+  //     if (progress == 1) {
+  //       await pause();
+  //       _playNext();
+  //     }
+  //   });
+  // }
 
   int convertTimeToSeconds(String timeString) {
     List<String> timeComponents = timeString.split(':');
@@ -175,5 +215,20 @@ class AudioController extends GetxController {
       print('Invalid time format');
       return 0;
     }
+  }
+
+  play_function() async {
+    isPlay = true;
+    error = false;
+    update();
+    await audioPlayer.play();
+
+    update();
+  }
+
+  Future<void> changeProgress(double value) async {
+    await audioPlayer
+        .seek(Duration(seconds: (value * programDuration).toInt()));
+    update();
   }
 }

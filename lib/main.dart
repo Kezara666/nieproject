@@ -1,7 +1,6 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:nieproject/pages/auth/login.dart';
 import 'package:nieproject/pages/player/player.dart';
@@ -10,17 +9,17 @@ import 'package:nieproject/services/providers/init_controllers.dart' as di;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
-  // runApp(const SoundControllingApp());
-  runApp(
-    DevicePreview(
-      enabled: true,
-      tools: [
-        ...DevicePreview.defaultTools,
+  runApp(const SoundControllingApp());
+  // runApp(
+  //   DevicePreview(
+  //     enabled: true,
+  //     tools: [
+  //       ...DevicePreview.defaultTools,
 
-      ],
-      builder: (context) => SoundControllingApp(),
-    ),
-  );
+  //     ],
+  //     builder: (context) => SoundControllingApp(),
+  //   ),
+  // );
 }
 
 class SoundControllingApp extends StatelessWidget {
@@ -34,6 +33,7 @@ class SoundControllingApp extends StatelessWidget {
     );
   }
 }
+
 
 
 
